@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COMPRAS SUPERMERCADO</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+body{font-family:Arial,Helvetica,sans-serif;background:#f4f6f8;margin:0;padding:20px}
+h1{text-align:center}
+input{padding:6px}
+.categoria{background:#1e88e5;color:#fff;padding:10px;border-radius:10px;margin-top:20px}
+.fila{display:grid;grid-template-columns:2fr 1fr 1fr 0.5fr;gap:8px;margin:6px 0}
+.total{font-size:26px;font-weight:bold;text-align:center;margin-top:20px}
+.precio::before{content:'$ '}
+</style>
+</head>
+<body>
+<h1>COMPRAS SUPERMERCADO</h1>
+<input id="buscar" placeholder="BUSCAR PRODUCTO..." style="width:100%;margin-bottom:20px">
+
+<div id="lista"></div>
+
+<div class="total">TOTAL: $<span id="total">0.00</span></div>
+
+<script>
+const data = {
+  CARNES:["RES","POLLO","CERDO","PESCADO","JAMON","CHORIZO","TOCINO","SALCHICHA"],
+  FRUTAS:["MANZANA","PLATANO","NARANJA","UVA","MANGO","FRESA","PIÑA","PERA"],
+  VERDURAS:["TOMATE","CEBOLLA","PAPA","ZANAHORIA","LECHUGA","CHILE","BROCOLI","PEPINO"],
+  LACTEOS:["LECHE","QUESO","YOGURT","CREMA","MANTEQUILLA","FLAN"],
+  PANADERIA:["PAN BLANCO","PAN INTEGRAL","BOLILLO","CONCHA","GALLETAS","PASTEL"]
+};
+
+const cont = document.getElementById("lista");
+
+for(const cat in data){
+  const c = document.createElement("div");
+  c.innerHTML = `<div class='categoria'>${cat}</div>`;
+  data[cat].forEach(p=>{
+    const f=document.createElement("div");
+    f.className="fila producto";
+    f.innerHTML=`
+      <input value="${p}" readonly>
+      <input type="number" min="0" class="cant">
+      <input type="number" min="0" class="precio">
+      <input type="checkbox" class="ok">
+    `;
+    c.appendChild(f);
+  });
+  cont.appendChild(c);
+}
+
+function calcular(){
+  let t=0;
+  document.querySelectorAll(".fila").forEach(f=>{
+    const c=f.querySelector(".cant").value;
+    const p=f.querySelector(".precio").value;
+    if(c && p) t+=c*p;
+  });
+  document.getElementById("total").innerText=t.toFixed(2);
+}
+
+document.addEventListener("input",calcular);
+
+document.getElementById("buscar").addEventListener("input",e=>{
+  const v=e.target.value.toUpperCase();
+  document.querySelectorAll(".producto").forEach(p=>{
+    p.style.display=p.firstElementChild.value.includes(v)?"grid":"none";
+  });
+});
+
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js");
+}
+</script>
+</body>
+</html>
