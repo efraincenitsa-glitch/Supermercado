@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compras Supermercado</title>
+<link rel="manifest" href="manifest.json">
+<style>
+body{font-family:Arial;margin:0;background:#f4f6f8}
+header{text-align:center;padding:15px}
+header img{width:60px}
+h1{margin:10px 0}
+input{padding:6px;margin:3px}
+.producto{width:40%}
+.cant{width:60px}
+.precio{width:90px}
+.row{display:flex;align-items:center;gap:5px;margin-bottom:5px}
+.categoria{background:#1e88e5;color:white;padding:6px;border-radius:8px;margin:10px 0}
+.total{font-weight:bold;margin-top:10px}
+</style>
+</head>
+<body>
+
+<header>
+<img src="img/carrito.png" alt="Carrito">
+<h1>COMPRAS SUPERMERCADO</h1>
+<input placeholder="BUSCAR PRODUCTO...">
+</header>
+
+<div class="categoria">CARNES</div>
+
+<div class="row">
+<input class="producto" value="RES">
+<input class="cant" type="number" value="1" oninput="sumar()">
+<input class="precio" type="number" value="150" oninput="sumar()">
+<input type="checkbox" checked>
+</div>
+
+<div class="row">
+<input class="producto" value="POLLO">
+<input class="cant" type="number" value="1" oninput="sumar()">
+<input class="precio" type="number" value="90" oninput="sumar()">
+<input type="checkbox" checked>
+</div>
+
+<p class="total">TOTAL: $<span id="total">0</span></p>
+
+<script>
+function sumar(){
+ let total=0;
+ document.querySelectorAll('.row').forEach(r=>{
+  let c=r.querySelector('.cant').value||0;
+  let p=r.querySelector('.precio').value||0;
+  total+=c*p;
+ });
+ document.getElementById('total').innerText=total.toFixed(2);
+}
+sumar();
+</script>
+
+</body>
+</html>
