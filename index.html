@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compras Supermercado</title>
+<link rel="manifest" href="manifest.json">
+<style>
+body{font-family:Arial;margin:0;padding:20px;background:#f4f6f8}
+h1{text-align:center}
+input{padding:8px;width:100%;margin:5px 0}
+.categoria{background:#1e88e5;color:white;padding:10px;margin-top:20px;border-radius:6px}
+.fila{display:grid;grid-template-columns:2fr 1fr 1fr 40px;gap:10px;margin-top:5px}
+.total{font-size:20px;margin-top:20px;font-weight:bold}
+.carrito{width:80px;margin:auto;display:block}
+</style>
+</head>
+<body>
+
+<img src="icons/carrito.png" class="carrito">
+<h1>COMPRAS SUPERMERCADO</h1>
+<input placeholder="BUSCAR PRODUCTO...">
+
+<div class="categoria">CARNES</div>
+<div class="fila">
+<input value="RES"><input type="number"><input type="number"><input type="checkbox">
+</div>
+<div class="fila">
+<input value="POLLO"><input type="number"><input type="number"><input type="checkbox">
+</div>
+
+<div class="categoria">FRUTAS</div>
+<div class="fila">
+<input value="MANZANA"><input type="number"><input type="number"><input type="checkbox">
+</div>
+<div class="fila">
+<input value="PLATANO"><input type="number"><input type="number"><input type="checkbox">
+</div>
+
+<div class="categoria">VERDURAS</div>
+<div class="fila">
+<input value="JITOMATE"><input type="number"><input type="number"><input type="checkbox">
+</div>
+
+<div class="total">TOTAL: $0.00</div>
+
+<script>
+const checks=document.querySelectorAll('input[type=checkbox]');
+checks.forEach(c=>c.addEventListener('change',()=>{
+ let total=0;
+ document.querySelectorAll('.fila').forEach(f=>{
+   if(f.querySelector('input[type=checkbox]').checked){
+     const c=f.children[1].value||0;
+     const p=f.children[2].value||0;
+     total+=c*p;
+   }
+ });
+ document.querySelector('.total').innerText="TOTAL: $"+total.toFixed(2);
+}));
+</script>
+
+</body>
+</html>
