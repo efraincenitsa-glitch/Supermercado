@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compras Supermercado</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <img src="icons/cart.png" class="cart-icon">
+  <h1>COMPRAS SUPERMERCADO</h1>
+  <input type="text" id="search" placeholder="BUSCAR PRODUCTO...">
+</header>
+
+<main id="catalogo"></main>
+
+<footer>
+  <button onclick="agregarProducto()">➕ AGREGAR PRODUCTO</button>
+  <h2 id="totalGeneral">TOTAL GENERAL: $0</h2>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
