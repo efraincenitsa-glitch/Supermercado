@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COMPRAS SUPERMERCADO</title>
+<link rel="manifest" href="manifest.json">
+<style>
+body{font-family:Arial;background:#f4f6f8;margin:0;padding:20px}
+h1{text-align:center}
+input{padding:8px;font-size:14px}
+.category{background:#1e88e5;color:#fff;padding:10px;border-radius:10px;margin-top:25px}
+.row{display:grid;grid-template-columns:3fr 1fr 1.5fr .5fr;gap:10px;margin-top:8px}
+.header{font-weight:bold}
+.total{text-align:center;font-size:24px;margin:30px 0}
+.price-wrap{position:relative}
+.price-wrap::before{content:"$";position:absolute;left:8px;top:8px}
+.price{padding-left:18px}
+</style>
+</head>
+<body>
+
+<h1>COMPRAS SUPERMERCADO</h1>
+<input type="text" placeholder="BUSCAR PRODUCTO..." onkeyup="filterProducts(this.value)">
+
+<div class="category">CARNES</div>
+<div class="row header">
+  <div>PRODUCTO</div><div>CANT</div><div>PRECIO</div><div>OK</div>
+</div>
+<div class="row">
+  <input value="RES">
+  <input type="number" class="qty">
+  <div class="price-wrap"><input type="number" class="price"></div>
+  <input type="checkbox">
+</div>
+<div class="row">
+  <input value="POLLO">
+  <input type="number" class="qty">
+  <div class="price-wrap"><input type="number" class="price"></div>
+  <input type="checkbox">
+</div>
+
+<div class="total">TOTAL: $<span id="total">0.00</span></div>
+
+<script>
+function calc(){
+ let total=0;
+ document.querySelectorAll('.row').forEach(r=>{
+  const q=r.querySelector('.qty');
+  const p=r.querySelector('.price');
+  if(q && p) total+= (q.value||0)*(p.value||0);
+ });
+ document.getElementById('total').textContent=total.toFixed(2);
+}
+document.addEventListener('input',calc);
+
+function filterProducts(val){
+ val=val.toUpperCase();
+ document.querySelectorAll('.row input:first-child').forEach(i=>{
+  i.parentElement.style.display=i.value.includes(val)?'grid':'none';
+ });
+}
+</script>
+
+</body>
+</html>
