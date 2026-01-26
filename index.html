@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COMPRAS SUPERMERCADO</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1e88e5">
+<style>
+body{font-family:Arial;background:#f4f6f8;margin:0;padding:20px}
+h1{text-align:center}
+.header-img{text-align:center;margin-bottom:10px}
+.header-img img{width:120px}
+input{padding:8px;font-size:14px}
+.category{background:#1e88e5;color:#fff;padding:10px;border-radius:10px;margin-top:25px}
+.row{display:grid;grid-template-columns:3fr 1fr 1.5fr .5fr;gap:10px;margin-top:8px}
+.header{font-weight:bold}
+button{margin-top:10px;padding:8px 12px;border:none;border-radius:8px;background:#43a047;color:#fff}
+.price-wrap{position:relative}
+.price-wrap::before{content:"$";position:absolute;left:8px;top:8px}
+.price{padding-left:18px}
+.cat-total{text-align:right;font-weight:bold;margin-top:10px}
+.total{text-align:center;font-size:24px;margin:30px 0}
+</style>
+</head>
+<body>
+
+<div class="header-img">
+  <img src="img/carrito.png" alt="Carrito">
+</div>
+
+<h1>COMPRAS SUPERMERCADO</h1>
+<input type="text" placeholder="BUSCAR PRODUCTO..." onkeyup="filterProducts(this.value)">
+
+<div class="category">CARNES</div>
+<div class="row header"><div>PRODUCTO</div><div>CANT</div><div>PRECIO</div><div>OK</div></div>
+<div id="carnes"></div>
+<button onclick="addProduct('carnes')">AGREGAR PRODUCTO</button>
+<div class="cat-total">TOTAL CARNES: $<span id="total-carnes">0.00</span></div>
+
+<div class="category">FRUTAS</div>
+<div class="row header"><div>PRODUCTO</div><div>CANT</div><div>PRECIO</div><div>OK</div></div>
+<div id="frutas"></div>
+<button onclick="addProduct('frutas')">AGREGAR PRODUCTO</button>
+<div class="cat-total">TOTAL FRUTAS: $<span id="total-frutas">0.00</span></div>
+
+<div class="category">VERDURAS</div>
+<div class="row header"><div>PRODUCTO</div><div>CANT</div><div>PRECIO</div><div>OK</div></div>
+<div id="verduras"></div>
+<button onclick="addProduct('verduras')">AGREGAR PRODUCTO</button>
+<div class="cat-total">TOTAL VERDURAS: $<span id="total-verduras">0.00</span></div>
+
+<div class="category">LACTEOS</div>
+<div class="row header"><div>PRODUCTO</div><div>CANT</div><div>PRECIO</div><div>OK</div></div>
+<div id="lacteos"></div>
+<button onclick="addProduct('lacteos')">AGREGAR PRODUCTO</button>
+<div class="cat-total">TOTAL LACTEOS: $<span id="total-lacteos">0.00</span></div>
+
+<div class="category">PANADERIA</div>
+<div class="row header"><div>PRODUCTO</div><div>CANT</div><div>PRECIO</div><div>OK</div></div>
+<div id="panaderia"></div>
+<button onclick="addProduct('panaderia')">AGREGAR PRODUCTO</button>
+<div class="cat-total">TOTAL PANADERIA: $<span id="total-panaderia">0.00</span></div>
+
+<div class="total">TOTAL GENERAL: $<span id="total">0.00</span></div>
+
+<script>
+const defaults={
+ carnes:["RES","POLLO","CERDO","PESCADO","JAMON","CHORIZO","TOCINO","ARRACHERA","MILANESA"],
+ frutas:["MANZANA","PLATANO","NARANJA","UVA","MANGO","FRESA","PIÑA","SANDIA"],
+ verduras:["TOMATE","CEBOLLA","PAPA","ZANAHORIA","LECHUGA","PEPINO","CALABAZA"],
+ lacteos:["LECHE","QUESO","YOGURT","CREMA","MANTEQUILLA","QUESO PANELA"],
+ panaderia:["PAN BLANCO","PAN DULCE","BOLILLO","CONCHA","BAGUETTE","CUERNITO"]
+};
+
+function addRow(cat,name=""){
+ const d=document.createElement("div");
+ d.className="row";
+ d.innerHTML=`<input value="${name}"><input type="number" class="qty">
+ <div class="price-wrap"><input type="number" class="price"></div><input type="checkbox">`;
+ document.getElementById(cat).appendChild(d);
+}
+
+Object.keys(defaults).forEach(c=>defaults[c].forEach(p=>addRow(c,p)));
+
+function addProduct(cat){addRow(cat);}
+
+function calc(){
+ let total=0;
+ Object.keys(defaults).forEach(c=>{
+  let sub=0;
+  document.querySelectorAll("#"+c+" .row").forEach(r=>{
+   const q=r.querySelector(".qty").value||0;
+   const p=r.querySelector(".price").value||0;
+   sub+=q*p;
+  });
+  document.getElementById("total-"+c).textContent=sub.toFixed(2);
+  total+=sub;
+ });
+ document.getElementById("total").textContent=total.toFixed(2);
+}
+document.addEventListener("input",calc);
+
+function filterProducts(v){
+ v=v.toUpperCase();
+ document.querySelectorAll(".row input:first-child").forEach(i=>{
+  i.parentElement.style.display=i.value.includes(v)?"grid":"none";
+ });
+}
+</script>
+
+</body>
+</html>
