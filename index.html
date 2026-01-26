@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COMPRAS SUPERMERCADO</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-1024.png">
+
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f2f4f8;margin:0;padding:15px}
+.container{max-width:440px;margin:auto;background:#fff;padding:20px;border-radius:16px}
+h1{text-align:center}
+.search{width:100%;padding:10px;margin-bottom:15px;text-transform:uppercase}
+.category{background:#1e88e5;color:#fff;padding:8px;border-radius:8px;margin-top:18px;font-weight:bold}
+.header{display:grid;grid-template-columns:1fr 70px 80px 80px;font-size:12px;color:#555;margin-top:6px}
+.item{display:grid;grid-template-columns:1fr 70px 80px 80px;gap:6px;margin:6px 0;align-items:center}
+input[type=number]{width:100%}
+input{text-transform:uppercase}
+.total{text-align:center;font-size:22px;margin-top:20px;font-weight:bold}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🛒 COMPRAS SUPERMERCADO</h1>
+
+<input class="search" placeholder="BUSCAR PRODUCTO..." oninput="filtrar(this.value)">
+
+<div class="category">CARNES</div>
+<div class="header"><div>PRODUCTO</div><div>CANT</div><div>PRECIO</div><div>CARRITO</div></div>
+<div class="item"><input value="RES"><input class="qty" type="number"><input class="price" type="number"><input class="check" type="checkbox"></div>
+<div class="item"><input value="POLLO"><input class="qty" type="number"><input class="price" type="number"><input class="check" type="checkbox"></div>
+
+<div class="category">FRUTAS</div>
+<div class="header"><div>PRODUCTO</div><div>CANT</div><div>PRECIO</div><div>CARRITO</div></div>
+<div class="item"><input value="MANZANA"><input class="qty" type="number"><input class="price" type="number"><input class="check" type="checkbox"></div>
+<div class="item"><input value="PLATANO"><input class="qty" type="number"><input class="price" type="number"><input class="check" type="checkbox"></div>
+
+<div class="category">VERDURAS</div>
+<div class="header"><div>PRODUCTO</div><div>CANT</div><div>PRECIO</div><div>CARRITO</div></div>
+<div class="item"><input value="TOMATE"><input class="qty" type="number"><input class="price" type="number"><input class="check" type="checkbox"></div>
+<div class="item"><input value="CEBOLLA"><input class="qty" type="number"><input class="price" type="number"><input class="check" type="checkbox"></div>
+
+<div class="category">LACTEOS</div>
+<div class="header"><div>PRODUCTO</div><div>CANT</div><div>PRECIO</div><div>CARRITO</div></div>
+<div class="item"><input value="LECHE"><input class="qty" type="number"><input class="price" type="number"><input class="check" type="checkbox"></div>
+<div class="item"><input value="QUESO"><input class="qty" type="number"><input class="price" type="number"><input class="check" type="checkbox"></div>
+
+<div class="category">PANADERIA</div>
+<div class="header"><div>PRODUCTO</div><div>CANT</div><div>PRECIO</div><div>CARRITO</div></div>
+<div class="item"><input value="PAN BLANCO"><input class="qty" type="number"><input class="price" type="number"><input class="check" type="checkbox"></div>
+
+<div class="total">TOTAL: $<span id="total">0.00</span></div>
+</div>
+
+<script>
+function calcular(){
+ let t=0;
+ document.querySelectorAll('.item').forEach(i=>{
+  if(i.querySelector('.check').checked){
+    let q=parseFloat(i.querySelector('.qty').value)||0;
+    let p=parseFloat(i.querySelector('.price').value)||0;
+    t+=q*p;
+  }
+ });
+ document.getElementById('total').innerText=t.toFixed(2);
+}
+
+document.querySelectorAll('input').forEach(i=>{
+ i.addEventListener('input',calcular);
+ i.addEventListener('change',calcular);
+});
+
+function normalizar(t){
+ return t.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+}
+
+function filtrar(txt){
+ txt=normalizar(txt.toUpperCase());
+ document.querySelectorAll('.item').forEach(i=>{
+  let name=normalizar(i.querySelector('input').value.toUpperCase());
+  i.style.display = name.includes(txt) ? 'grid' : 'none';
+ });
+}
+</script>
+</body>
+</html>
