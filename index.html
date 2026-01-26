@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compras Supermercado</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f8;
+    margin:0;
+    padding:20px;
+}
+h1{text-align:center}
+.search{max-width:300px;margin:10px auto;display:block;padding:8px}
+.categoria{
+    background:#1e88e5;
+    color:#fff;
+    padding:10px;
+    margin-top:25px;
+    border-radius:8px;
+}
+.grid-header, .item{
+    display:grid;
+    grid-template-columns: 2fr 1fr 1fr 0.5fr;
+    gap:10px;
+    margin-top:10px;
+}
+.grid-header{
+    font-weight:bold;
+}
+input{
+    padding:6px;
+}
+.total-cat, #totalGeneral{
+    font-weight:bold;
+    margin-top:10px;
+}
+.carrito{
+    display:block;
+    margin:0 auto 10px;
+    width:80px;
+}
+</style>
+</head>
+
+<body>
+
+<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzFlODhlNSIgdmlld0JveD0iMCAwIDI0IDI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik03IDRsLTEgMmgxOGwtMyA4SDd6bTEgMTJhMiAyIDAgMSAwIDAgNCAyIDIgMCAwIDAgMC00em04IDBhMiAyIDAgMSAwIDAgNCAyIDIgMCAwIDAgMC00eiIvPjwvc3ZnPg==" class="carrito">
+
+<h1>COMPRAS SUPERMERCADO</h1>
+<input class="search" placeholder="BUSCAR PRODUCTO...">
+
+<div class="categoria">CARNES</div>
+<div class="grid-header">
+<div>PRODUCTO</div><div>CANT</div><div>PRECIO $</div><div>OK</div>
+</div>
+
+<div class="item">
+<input value="RES">
+<input type="number" min="0" class="cant">
+<input type="number" min="0" class="precio">
+<input type="checkbox">
+</div>
+
+<div class="item">
+<input value="POLLO">
+<input type="number" min="0" class="cant">
+<input type="number" min="0" class="precio">
+<input type="checkbox">
+</div>
+
+<div class="total-cat" id="totalCarnes">TOTAL CARNES: $0</div>
+
+<div class="categoria">FRUTAS</div>
+<div class="grid-header">
+<div>PRODUCTO</div><div>CANT</div><div>PRECIO $</div><div>OK</div>
+</div>
+
+<div class="item">
+<input value="MANZANA">
+<input type="number" min="0" class="cant">
+<input type="number" min="0" class="precio">
+<input type="checkbox">
+</div>
+
+<div class="item">
+<input value="PLATANO">
+<input type="number" min="0" class="cant">
+<input type="number" min="0" class="precio">
+<input type="checkbox">
+</div>
+
+<div class="total-cat" id="totalFrutas">TOTAL FRUTAS: $0</div>
+
+<div id="totalGeneral">TOTAL GENERAL: $0</div>
+
+<script>
+function recalcular(){
+    let total = 0;
+    document.querySelectorAll('.item').forEach(row=>{
+        const c = row.querySelector('.cant').value || 0;
+        const p = row.querySelector('.precio').value || 0;
+        total += c*p;
+    });
+    document.getElementById('totalGeneral').innerText = "TOTAL GENERAL: $" + total.toFixed(2);
+}
+document.querySelectorAll('input').forEach(i=>i.addEventListener('input',recalcular));
+</script>
+
+</body>
+</html>
