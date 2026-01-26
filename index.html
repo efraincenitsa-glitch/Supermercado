@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compras Supermercado</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-1024.png">
+<style>
+body{font-family:Arial;background:#f2f4f8;margin:0;padding:10px}
+.container{max-width:420px;margin:auto;background:#fff;padding:15px;border-radius:16px}
+h1{text-align:center}
+#search{width:100%;padding:10px;border-radius:10px;margin-bottom:10px}
+.category h2{background:#1e88e5;color:white;padding:8px;border-radius:8px}
+.item{display:grid;grid-template-columns:1fr 60px 70px 30px;gap:5px;margin-bottom:6px}
+.total{text-align:center;font-weight:bold;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🛒 Compras Supermercado</h1>
+<input id="search" placeholder="Buscar producto..." oninput="filterItems()">
+<div id="list"></div>
+<div class="total" id="total">Total: $0.00</div>
+</div>
+
+<script>
+const categories={
+"Panadería":["Pan blanco","Bolillo","Telera","Conchas","Donas","Baguette","Cuernito"],
+"Lácteos":["Leche","Queso","Yogurt","Crema","Mantequilla"],
+"Carnes":["Pollo","Res","Cerdo","Pescado"],
+"Frutas":["Manzana","Plátano","Naranja"],
+"Verduras":["Tomate","Cebolla","Papa"]
+};
+
+const list=document.getElementById("list");
+
+function load(){
+list.innerHTML="";
+for(let c in categories){
+let d=document.createElement("div");
+d.className="category";
+d.innerHTML=`<h2>${c}</h2>`;
+categories[c].forEach(n=>{
+d.innerHTML+=`<div class="item" data-name="${n.toLowerCase()}">
+<input value="${n}">
+<input type="number" placeholder="Cant">
+<input type="number" placeholder="$">
+<input type="checkbox">
+</div>`;
+});
+list.appendChild(d);
+}
+}
+function filterItems(){
+let q=document.getElementById("search").value.toLowerCase();
+document.querySelectorAll(".item").forEach(i=>{
+i.style.display=i.dataset.name.includes(q)?"grid":"none";
+});
+}
+load();
+</script>
+</body>
+</html>
