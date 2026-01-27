@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compras Supermercado</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#f4f6f9}
+h1{text-align:center}
+.container{max-width:900px;margin:auto;padding:10px}
+input,button{padding:6px;font-size:14px}
+.categoria{background:#1e88e5;color:#fff;padding:10px;margin-top:20px;border-radius:8px}
+.producto{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:5px;background:#fff;padding:6px;margin-top:5px;border-radius:6px;align-items:center}
+.total-cat{text-align:right;font-weight:bold;margin-top:5px}
+.total-general{font-size:20px;text-align:right;margin-top:20px;font-weight:bold}
+.top-actions{display:flex;gap:10px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>COMPRAS SUPERMERCADO</h1>
+
+<div class="top-actions">
+<input type="text" id="buscar" placeholder="Buscar producto..." oninput="filtrar()">
+<label><input type="checkbox" id="soloCantidad" onchange="filtrar()"> Solo con cantidad</label>
+<button onclick="resetear()">Restaurar catálogo</button>
+</div>
+
+<hr>
+
+<h3>Alta de producto</h3>
+<input id="nuevoNombre" placeholder="Nombre">
+<input id="nuevaCategoria" placeholder="Categoría">
+<button onclick="agregarProducto()">Agregar</button>
+
+<div id="lista"></div>
+<div class="total-general" id="totalGeneral">$0.00</div>
+</div>
+
+<script>
+const catalogoBase = [
+ // Carnes
+ {nombre:"Res",categoria:"Carnes"},
+ {nombre:"Pollo",categoria:"Carnes"},
+ {nombre:"Cerdo",categoria:"Carnes"},
+ {nombre:"Pescado",categoria:"Carnes"},
+ {nombre:"Jamón",categoria:"Carnes"},
+ {nombre:"Chorizo",categoria:"Carnes"},
+ {nombre:"Tocino",categoria:"Carnes"},
+ {nombre:"Salchicha",categoria:"Carnes"},
+
+ // Frutas
+ {nombre:"Manzana",categoria:"Frutas"},
+ {nombre:"Plátano",categoria:"Frutas"},
+ {nombre:"Naranja",categoria:"Frutas"},
+ {nombre:"Fresa",categoria:"Frutas"},
+ {nombre:"Uva",categoria:"Frutas"},
+
+ // Verduras
+ {nombre:"Jitomate",categoria:"Verduras"},
+ {nombre:"Cebolla",categoria:"Verduras"},
+ {nombre:"Papa",categoria:"Verduras"},
+ {nombre:"Zanahoria",categoria:"Verduras"},
+ {nombre:"Lechuga",categoria:"Verduras"},
+
+ // Abarrotes
+ {nombre:"Arroz",categoria:"Abarrotes"},
+ {nombre:"Frijol",categoria:"Abarrotes"},
+ {nombre:"Azúcar",categoria:"Abarrotes"},
+ {nombre:"Sal",categoria:"Abarrotes"},
+ {nombre:"Aceite",categoria:"Abarrotes"},
+ {nombre:"Pasta",categoria:"Abarrotes"},
+ {nombre:"Harina",categoria:"Abarrotes"},
+ {nombre:"Cereal",categoria:"Abarrotes"}
+];
+
+function cargarInicial(){
+ return catalogoBase.map(p=>({
+  nombre:p.nombre,
+  categoria:p.categoria,
+  cantidad:0,
+  precio:0
+ }));
+}
+
+let productos = JSON.parse(localStorage.getItem("productos")) || cargarInicial();
+
+function guardar(){localStorage.setItem("productos",JSON.stringify(productos))}
+
+function resetear(){
+ if(confirm("¿Restaurar catálogo completo?")){
+  productos = cargarInicial();
+  guardar();
+  render();
+ }
+}
+
+function agregarProducto(){
+ let n=nuevoNombre.value.trim(),c=nuevaCategoria.value.trim();
+ if(!n||!c)return;
+ productos.push({nombre:n,categoria:c,cantidad:0,precio:0});
+ nuevoNombre.value="";nuevaCategoria.value="";
+ guardar();render();
+}
+
+function render(){
+ let cont=document.getElementById("lista");cont.innerHTML="";
+ let cats={},tg=0;
+ productos.forEach((p,i)=>{
+  if(!cats[p.categoria])cats[p.categoria]=[];
+  cats[p.categoria].push({...p,index:i});
+ });
+ for(let c in cats){
+  let tc=0;
+  cont.innerHTML+=`<div class="categoria">${c}</div>`;
+  cats[c].forEach(p=>{
+   let s=p.cantidad*p.precio;tc+=s;tg+=s;
+   cont.innerHTML+=`
+   <div class="producto" data-nombre="${p.nombre}">
+    <strong>${p.nombre}</strong>
+    <input type="number" min="0" value="${p.cantidad}" oninput="productos[${p.index}].cantidad=this.value;guardar();render()">
+    <input type="number" min="0" value="${p.precio}" oninput="productos[${p.index}].precio=this.value;guardar();render()">
+    <div>$${s.toFixed(2)}</div>
+    <input type="checkbox">
+   </div>`;
+  });
+  cont.innerHTML+=`<div class="total-cat">Total ${c}: $${tc.toFixed(2)}</div>`;
+ }
+ totalGeneral.innerText="TOTAL GENERAL: $"+tg.toFixed(2);
+ filtrar();
+}
+
+function filtrar(){
+ let t=buscar.value.toLowerCase(),s=soloCantidad.checked;
+ document.querySelectorAll(".producto").forEach(p=>{
+  let n=p.dataset.nombre.toLowerCase();
+  let c=p.querySelector("input").value;
+  let v=n.includes(t);
+  if(s&&c==0)v=false;
+  p.style.display=v?"grid":"none";
+ });
+}
+
+render();
+</script>
+</body>
+</html>
