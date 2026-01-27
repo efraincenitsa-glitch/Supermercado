@@ -1,8 +1,0 @@
-body{font-family:Arial;background:#f4f6f8;margin:0}
-h1{text-align:center;padding:15px}
-.filters{display:flex;gap:10px;justify-content:center;margin-bottom:15px;flex-wrap:wrap}
-.category{background:#1e88e5;color:#fff;padding:10px;border-radius:8px;margin:15px}
-.item{background:#fff;color:#000;padding:8px;border-radius:6px;margin:6px;display:grid;grid-template-columns:1fr 70px 90px 90px;gap:6px;align-items:center}
-.item span{font-weight:bold}
-input{padding:4px}
-#total{text-align:right;font-size:18px;font-weight:bold;padding:20px}
