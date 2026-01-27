@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compras Supermercado</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#f4f6f9}
+h1{text-align:center}
+.container{max-width:1000px;margin:auto;padding:10px}
+input,select,button{padding:6px;font-size:14px}
+.categoria{background:#1e88e5;color:#fff;padding:10px;margin-top:25px;border-radius:8px}
+.encabezado{
+ display:grid;
+ grid-template-columns:2fr 1fr 1fr 1fr auto;
+ gap:5px;
+ font-weight:bold;
+ padding:6px;
+}
+.producto{
+ display:grid;
+ grid-template-columns:2fr 1fr 1fr 1fr auto;
+ gap:5px;
+ background:#fff;
+ padding:6px;
+ margin-top:4px;
+ border-radius:6px;
+ align-items:center
+}
+.total-cat{text-align:right;font-weight:bold;margin-top:5px}
+.total-general{font-size:22px;text-align:right;margin:25px 0;font-weight:bold}
+.top-actions{display:flex;gap:10px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>COMPRAS SUPERMERCADO</h1>
+
+<div class="top-actions">
+<input type="text" id="buscar" placeholder="Buscar producto..." oninput="filtrar()">
+<label><input type="checkbox" id="soloCantidad" onchange="filtrar()"> Solo con cantidad</label>
+<button onclick="resetear()">Restaurar catálogo</button>
+</div>
+
+<hr>
+
+<h3>Alta de producto</h3>
+<input id="nuevoNombre" placeholder="Nombre">
+<select id="nuevaCategoria"></select>
+<button onclick="agregarProducto()">Agregar</button>
+
+<div id="lista"></div>
+<div class="total-general" id="totalGeneral">$0.00</div>
+</div>
+
+<script>
+const categorias = {
+ "Carnes":[
+ "Res","Pollo","Cerdo","Carne molida","Bistec","Costilla","Chuleta","Arrachera","Chorizo","Tocino","Jamón","Salchicha","Pechuga","Muslo","Alitas"
+ ],
+ "Pescadería":[
+ "Filete de pescado","Mojarra","Tilapia","Atún fresco","Salmón","Camarón","Pulpo","Calamar","Sardina","Jaiba","Ostión","Langostino","Cazón","Trucha","Robalo"
+ ],
+ "Panadería":[
+ "Pan blanco","Pan integral","Bolillo","Telera","Concha","Cuerno","Donas","Baguette","Pan dulce","Roles","Pan de caja","Pan para hot dog","Pan para hamburguesa","Croissant","Empanada"
+ ],
+ "Lácteos y Cremería":[
+ "Leche entera","Leche deslactosada","Leche light","Queso Oaxaca","Queso Manchego","Queso Panela","Queso Crema","Yogur natural","Yogur bebible","Mantequilla","Crema","Requesón","Media crema","Leche condensada","Leche evaporada"
+ ],
+ "Frutas y Verduras":[
+ "Manzana","Plátano","Naranja","Papaya","Mango","Piña","Sandía","Melón","Uva","Fresa","Jitomate","Cebolla","Papa","Zanahoria","Lechuga"
+ ],
+ "Congelados":[
+ "Verduras congeladas","Papas congeladas","Pizza congelada","Hamburguesas","Nuggets","Helado","Hielo","Pollo congelado","Carne congelada","Pescado congelado","Paletas","Lasagna","Empanizados","Waffles","Pan congelado"
+ ],
+ "Limpieza del Hogar":[
+ "Cloro","Detergente","Suavizante","Limpiador multiusos","Desinfectante","Fabuloso","Pinol","Jabón para trastes","Esponjas","Fibras","Escoba","Trapeador","Bolsas de basura","Aromatizante","Papel de cocina"
+ ],
+ "Higiene Personal":[
+ "Papel higiénico","Jabón de baño","Shampoo","Acondicionador","Crema corporal","Desodorante","Pasta dental","Cepillo dental","Rastrillos","Toallas femeninas","Pañales","Gel antibacterial","Enjuague bucal","Algodón","Hisopos"
+ ]
+};
+
+function cargarInicial(){
+ let arr=[];
+ for(let c in categorias){
+  categorias[c].forEach(n=>{
+   arr.push({nombre:n,categoria:c,cantidad:0,precio:0});
+  });
+ }
+ return arr;
+}
+
+let productos = JSON.parse(localStorage.getItem("productos")) || cargarInicial();
+function guardar(){localStorage.setItem("productos",JSON.stringify(productos))}
+
+function resetear(){
+ if(confirm("¿Restaurar catálogo completo?")){
+  productos=cargarInicial();guardar();render();
+ }
+}
+
+function cargarCategoriasSelect(){
+ const sel=document.getElementById("nuevaCategoria");
+ sel.innerHTML='<option value="">Selecciona categoría</option>';
+ Object.keys(categorias).forEach(c=>{
+  sel.innerHTML+=`<option value="${c}">${c}</option>`;
+ });
+}
+
+function agregarProducto(){
+ let n=nuevoNombre.value.trim(),c=nuevaCategoria.value;
+ if(!n||!c)return;
+ productos.push({nombre:n,categoria:c,cantidad:0,precio:0});
+ nuevoNombre.value="";nuevaCategoria.value="";
+ guardar();render();
+}
+
+function render(){
+ let cont=document.getElementById("lista");cont.innerHTML="";
+ let cats={},tg=0;
+ productos.forEach((p,i)=>{
+  if(!cats[p.categoria])cats[p.categoria]=[];
+  cats[p.categoria].push({...p,index:i});
+ });
+
+ for(let c in cats){
+  let tc=0;
+  cont.innerHTML+=`<div class="categoria">${c}</div>
+  <div class="encabezado">
+   <div>Producto</div>
+   <div>Cantidad</div>
+   <div>Precio</div>
+   <div>Subtotal</div>
+   <div>✔</div>
+  </div>`;
+
+  cats[c].forEach(p=>{
+   let s=p.cantidad*p.precio;tc+=s;tg+=s;
+   cont.innerHTML+=`
+   <div class="producto" data-nombre="${p.nombre}">
+    <strong>${p.nombre}</strong>
+    <input type="number" min="0" value="${p.cantidad}" oninput="productos[${p.index}].cantidad=this.value;guardar();render()">
+    <input type="number" min="0" value="${p.precio}" oninput="productos[${p.index}].precio=this.value;guardar();render()">
+    <div>$${s.toFixed(2)}</div>
+    <input type="checkbox">
+   </div>`;
+  });
+  cont.innerHTML+=`<div class="total-cat">Total ${c}: $${tc.toFixed(2)}</div>`;
+ }
+ totalGeneral.innerText="TOTAL GENERAL: $"+tg.toFixed(2);
+ filtrar();
+}
+
+function filtrar(){
+ let t=buscar.value.toLowerCase(),s=soloCantidad.checked;
+ document.querySelectorAll(".producto").forEach(p=>{
+  let n=p.dataset.nombre.toLowerCase();
+  let c=p.querySelector("input").value;
+  let v=n.includes(t);
+  if(s&&c==0)v=false;
+  p.style.display=v?"grid":"none";
+ });
+}
+
+cargarCategoriasSelect();
+render();
+</script>
+</body>
+</html>
