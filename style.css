@@ -1,0 +1,38 @@
+body{
+  font-family: Arial, sans-serif;
+  background:#f2f4f8;
+  margin:0;
+  padding:10px;
+}
+h1{text-align:center}
+.filters{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
+.category{
+  background:#1e88e5;
+  color:white;
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:20px;
+}
+.item{
+  background:white;
+  margin:8px 0;
+  padding:10px;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.item span{flex:1;font-weight:bold}
+input[type=number]{width:70px}
+#total{
+  font-size:20px;
+  font-weight:bold;
+  text-align:right;
+  padding:20px;
+}
