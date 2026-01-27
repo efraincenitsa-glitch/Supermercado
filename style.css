@@ -1,0 +1,13 @@
+body{
+  font-family: Arial, sans-serif;
+  background:#f4f6f8;
+  margin:0;
+}
+h1{text-align:center;padding:20px}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.category{background:#1e88e5;color:#fff;padding:12px;border-radius:10px;margin:20px}
+.item{background:#fff;margin:8px;padding:10px;border-radius:8px;display:flex;align-items:center;gap:8px}
+.item span{flex:1;font-weight:bold}
+label{font-size:12px}
+input{width:70px}
+.total{text-align:right;font-size:18px;font-weight:bold;padding:20px}
