@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compras Supermercado</title>
+  <link rel="apple-touch-icon" href="icons/icon-1024.png">
+  <link rel="icon" href="icons/icon-1024.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Compras Supermercado</h1>
+
+  <div class="filtros">
+    <input type="text" id="buscar" placeholder="Buscar producto">
+    <label><input type="checkbox" id="soloCantidad"> Solo con cantidad</label>
+    <select id="filtroCategoria">
+      <option value="Todas">Todas</option>
+      <option value="Carnes">Carnes</option>
+      <option value="Verduras">Verduras</option>
+      <option value="Abarrotes">Abarrotes</option>
+    </select>
+  </div>
+
+  <div id="lista"></div>
+
+  <div id="total">TOTAL: $0.00</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
