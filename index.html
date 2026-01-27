@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supermercado</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-1024.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#2e7d32">
+
+<style>
+body{font-family:Arial;margin:0;background:#f2f4f8}
+header{background:#2e7d32;color:#fff;padding:15px;text-align:center;font-size:20px}
+.container{padding:15px}
+input,select,button{width:100%;padding:10px;margin-top:10px;font-size:16px}
+button{background:#2e7d32;color:white;border:none;border-radius:5px}
+.secondary{background:#555}
+table{width:100%;margin-top:15px;border-collapse:collapse}
+th,td{padding:8px;border-bottom:1px solid #ccc;text-align:left}
+.total{font-size:18px;margin-top:10px;font-weight:bold}
+</style>
+</head>
+
+<body>
+<header>🛒 Supermercado</header>
+<div class="container">
+
+<select id="categoria" onchange="cargarProductos()"></select>
+<select id="producto"></select>
+
+<input type="number" id="cantidad" placeholder="Cantidad">
+<input type="number" id="precio" placeholder="Precio unitario">
+
+<button onclick="agregar()">Agregar compra</button>
+
+<button class="secondary" onclick="altaCategoria()">Alta categoría</button>
+<button class="secondary" onclick="altaProducto()">Alta producto</button>
+
+<table>
+<thead>
+<tr>
+<th>Categoría</th>
+<th>Producto</th>
+<th>Cantidad</th>
+<th>Precio</th>
+<th>Subtotal</th>
+</tr>
+</thead>
+<tbody id="lista"></tbody>
+</table>
+
+<div class="total">Total: $<span id="total">0</span></div>
+</div>
+
+<script>
+let categorias = JSON.parse(localStorage.getItem("categorias")) || {"Abarrotes": ["Arroz", "Frijol", "Lentejas", "Pasta", "Aceite"], "Carnes": ["Pollo", "Carne de Res", "Pescado"], "Lácteos": ["Leche", "Queso", "Huevo"], "Limpieza": ["Detergente", "Cloro"]};
+let datos = JSON.parse(localStorage.getItem("compras")) || [];
+
+function init(){
+  let catSel = document.getElementById("categoria");
+  catSel.innerHTML = Object.keys(categorias).map(c=>'<option>'+c+'</option>').join("");
+  cargarProductos();
+  render();
+}
+
+function cargarProductos(){
+  let cat = categoria.value;
+  producto.innerHTML = categorias[cat].map(p=>'<option>'+p+'</option>').join("");
+}
+
+function agregar(){
+  let c = Number(cantidad.value);
+  let p = Number(precio.value);
+  let sub = c * p;
+
+  datos.push({
+    categoria: categoria.value,
+    producto: producto.value,
+    cantidad: c,
+    precio: p,
+    subtotal: sub
+  });
+
+  guardar();
+  render();
+}
+
+function render(){
+  let t = 0;
+  lista.innerHTML = "";
+  datos.forEach(d=>{
+    t += d.subtotal;
+    lista.innerHTML += '<tr>'+
+      '<td>'+d.categoria+'</td>'+
+      '<td>'+d.producto+'</td>'+
+      '<td>'+d.cantidad+'</td>'+
+      '<td>$'+d.precio+'</td>'+
+      '<td>$'+d.subtotal+'</td>'+
+    '</tr>';
+  });
+  total.innerText = t.toFixed(2);
+}
+
+function guardar(){
+  localStorage.setItem("compras", JSON.stringify(datos));
+  localStorage.setItem("categorias", JSON.stringify(categorias));
+}
+
+function altaCategoria(){
+  let nombre = prompt("Nombre de la nueva categoría:");
+  if(nombre){
+    categorias[nombre] = [];
+    guardar();
+    init();
+  }
+}
+
+function altaProducto(){
+  let cat = categoria.value;
+  let nombre = prompt("Nombre del nuevo producto:");
+  if(nombre){
+    categorias[cat].push(nombre);
+    guardar();
+    cargarProductos();
+  }
+}
+
+init();
+</script>
+</body>
+</html>
