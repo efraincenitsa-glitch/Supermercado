@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -23,24 +22,53 @@ button{border:none;border-radius:6px}
 table{width:100%;border-collapse:collapse;margin-top:15px}
 th,td{border:1px solid #ccc;padding:8px;text-align:center}
 tr.surtido{background:#c8e6c9;text-decoration:line-through}
+hr{margin:15px 0}
+
+/* 🔒 OCULTAR ALTA DE PRODUCTO */
+.oculto{display:none}
 </style>
 </head>
+
 <body>
 <header>🛒 Supermercado PRO MAX</header>
+
 <div class="container">
 
+<!-- SELECTORES -->
 <select id="categoria"></select>
-<select id="producto"></select>
-<input type="number" id="cantidad" value="1">
-<input type="number" id="precio" placeholder="Precio">
 
+<!-- 🔍 BUSCADOR -->
+<input type="text" id="buscador" placeholder="Buscar producto por nombre">
+
+<select id="producto"></select>
+
+<input type="number" id="cantidad" value="1" min="1">
+<input type="number" id="precio" placeholder="Precio" min="0" step="0.01">
+
+<!-- ALTA PRODUCTO (OCULTO) -->
+<div class="oculto">
+<hr>
+<input type="text" id="nuevoProducto" placeholder="Nuevo producto">
+<button class="green" onclick="altaProducto()">➕ Alta producto</button>
+<hr>
+</div>
+
+<!-- BOTONES -->
 <button class="green" onclick="agregar()">Agregar</button>
 <button class="red" onclick="eliminar()">Eliminar seleccionado</button>
 <button class="orange" onclick="limpiar()">Limpiar lista</button>
 
+<!-- TABLA -->
 <table>
 <thead>
-<tr><th>Cat.</th><th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th><th>✔</th></tr>
+<tr>
+<th>Cat.</th>
+<th>Producto</th>
+<th>Cant.</th>
+<th>Precio</th>
+<th>Subtotal</th>
+<th>✔</th>
+</tr>
 </thead>
 <tbody id="lista"></tbody>
 </table>
@@ -49,40 +77,117 @@ tr.surtido{background:#c8e6c9;text-decoration:line-through}
 </div>
 
 <script>
-const catalogo={
-"Abarrotes":["Arroz","Frijol","Lentejas","Pasta","Harina","Azúcar","Sal","Aceite","Atún","Sardina","Cereal","Galletas","Pan","Café","Té","Mayonesa","Mostaza","Catsup","Miel","Avena"],
-"Carnes":["Res","Pollo","Cerdo","Pescado","Chuleta","Milanesa","Costilla","Chorizo","Salchicha","Jamón","Tocino","Bistec","Arrachera","Carne molida","Pechuga","Muslo","Alitas","Longaniza","Hamburguesa","Atún fresco"],
-"Lácteos":["Leche","Queso","Yogurt","Crema","Mantequilla","Huevo","Panela","Oaxaca","Amarillo","Griego","Natilla","Media crema","Leche polvo","Evaporada","Requesón","Flan","Gelatina","Helado","Nata","Deslactosada"],
-"Limpieza":["Cloro","Detergente","Suavizante","Jabón trastes","Limpiador piso","Desinfectante","Esponja","Fibra","Guantes","Bolsas basura","Trapeador","Escoba","Recogedor","Limpiavidrios","Aromatizante","Insecticida","Limpiabaños","Toallas","Jabón ropa","Quitamanchas"]
+// ===== CATÁLOGO =====
+const catalogo = JSON.parse(localStorage.getItem("catalogo")) || {
+ "Abarrotes":["Arroz", "Frijol", "Lentejas", "Garbanzos", "Azúcar", "Sal", "Harina de trigo", "Harina de maíz", "Aceite vegetal", "Aceite de oliva", "Vinagre", "Café molido", "Café soluble", "Té", "Avena", "Cereal de maíz", "Pasta espagueti", "Pasta codito", "Salsa de tomate", "Puré de tomate", "Mayonesa", "Mostaza", "Kétchup", "Chiles enlatados", "Atún en lata", "Sardinas en lata", "Sopa instantánea", "Caldo en cubos", "Galletas saladas", "Galletas dulces", "Pan de caja", "Pan molido", "Mermelada", "Miel", "Chocolate en polvo", "Gelatina", "Levadura", "Especias mixtas", "Consomé", "Almidón de maíz"],
+ "Carnes":["Carne molida de res", "Bistec de res", "Chuleta de res", "Costilla de res", "Arrachera", "Diezmillo", "Pechuga de pollo", "Pierna de pollo", "Muslo de pollo", "Pollo entero", "Filete de pescado", "Pescado entero", "Carne molida de cerdo", "Chuleta de cerdo", "Lomo de cerdo", "Costilla de cerdo", "Tocino", "Jamón", "Salchichas", "Chorizo", "Longaniza", "Salami", "Mortadela", "Salchichón", "Carne para hamburguesa", "Nuggets de pollo", "Alitas de pollo", "Carne para milanesa", "Carne seca", "Carne marinada", "Filete de tilapia", "Filete de salmón", "Filete de atún", "Mojarra entera", "Bagre entero", "Robalo entero", "Huachinango entero", "Sierra en rodajas", "Camarón crudo", "Camarón cocido", "Pulpo", "Calamar", "Jaiba", "Surimi", "Pescado empanizado"],
+ "Lácteos":["Leche entera", "Leche semidescremada", "Leche descremada", "Leche deslactosada", "Leche evaporada", "Leche condensada", "Leche en polvo", "Yogur natural", "Yogur griego", "Yogur bebible", "Queso fresco", "Queso crema", "Queso mozzarella", "Queso cheddar", "Queso manchego", "Queso parmesano", "Queso gouda", "Queso azul", "Requesón", "Ricotta", "Mantequilla", "Margarina láctea", "Crema de leche", "Crema agria", "Suero de leche", "Helado", "Paletas de crema", "Flan de leche", "Natilla", "Kéfir"],
+ "Limpieza":["Detergente en polvo", "Detergente líquido", "Suavizante de telas", "Jabón en barra para lavar", "Jabón líquido para manos", "Cloro", "Blanqueador", "Desinfectante líquido", "Desinfectante en aerosol", "Limpiador multiusos", "Limpiador de pisos", "Limpiador de baños", "Limpiador de cocina", "Limpiador de vidrios", "Limpiador de hornos", "Limpiador de acero inoxidable", "Quitamanchas", "Desengrasante", "Alcohol", "Amoníaco", "Limpiador aromatizante", "Pastillas para WC", "Gel limpiador para WC", "Escoba", "Trapeador", "Cubeta", "Fibra para tallar", "Esponjas", "Trapos de limpieza", "Toallas desechables", "Servilletas", "Papel higiénico", "Papel de cocina", "Bolsas para basura", "Insecticida", "Repelente de insectos", "Aromatizante ambiental", "Limpiador antibacterial", "Guantes de limpieza", "Cepillo para baño"]
 };
 
-let compras=[], sel=null;
-const cat=document.getElementById("categoria"), prod=document.getElementById("producto");
+// ===== COMPRAS =====
+let compras = JSON.parse(localStorage.getItem("compras")) || [];
+let sel = null;
 
-Object.keys(catalogo).forEach(c=>cat.add(new Option(c,c)));
-cat.onchange=()=>{prod.innerHTML="";catalogo[cat.value].forEach(p=>prod.add(new Option(p,p)));};
-cat.dispatchEvent(new Event("change"));
+const cat = document.getElementById("categoria");
+const prod = document.getElementById("producto");
+const buscador = document.getElementById("buscador");
+const lista = document.getElementById("lista");
+const total = document.getElementById("total");
 
+// ===== CARGA =====
+function cargarCategorias(){
+ cat.innerHTML="";
+ Object.keys(catalogo).forEach(c=>cat.add(new Option(c,c)));
+ cargarProductos();
+}
+
+function cargarProductos(filtro=""){
+ prod.innerHTML="";
+ catalogo[cat.value]
+  .filter(p=>p.toLowerCase().includes(filtro.toLowerCase()))
+  .forEach(p=>prod.add(new Option(p,p)));
+}
+
+cat.onchange = ()=>{
+ buscador.value="";
+ cargarProductos();
+};
+
+buscador.oninput = ()=>{
+ cargarProductos(buscador.value);
+};
+
+cargarCategorias();
+
+// ===== FUNCIONES =====
 function agregar(){
- compras.push({c:cat.value,p:prod.value,ca:+cantidad.value,pr:+precio.value,s:false});
+ if(!precio.value){ alert("Ingresa un precio"); return; }
+
+ compras.push({
+  c:cat.value,
+  p:prod.value,
+  ca:+cantidad.value,
+  pr:+precio.value,
+  s:false
+ });
  render();
 }
-function eliminar(){if(sel!=null){compras.splice(sel,1);sel=null;render();}}
-function limpiar(){if(confirm("¿Limpiar lista?")){compras=[];render();}}
-function toggle(i){compras[i].s=!compras[i].s;render();}
+
+function eliminar(){
+ if(sel!==null){
+  compras.splice(sel,1);
+  sel=null;
+  render();
+ }
+}
+
+function limpiar(){
+ if(confirm("¿Limpiar lista?")){
+  compras=[];
+  render();
+ }
+}
+
+function toggle(i){
+ compras[i].s=!compras[i].s;
+ render();
+}
+
+function altaProducto(){
+ const np=document.getElementById("nuevoProducto").value.trim();
+ if(!np)return;
+ catalogo[cat.value].push(np);
+ localStorage.setItem("catalogo",JSON.stringify(catalogo));
+ cargarProductos();
+}
 
 function render(){
- let tb=lista;tb.innerHTML="";let t=0;
+ lista.innerHTML="";
+ let t=0;
+
  compras.forEach((x,i)=>{
-  let tr=document.createElement("tr");
-  if(x.s)tr.className="surtido";
+  const tr=document.createElement("tr");
+  if(x.s) tr.className="surtido";
   tr.onclick=()=>sel=i;
-  tr.innerHTML=`<td>${x.c}</td><td>${x.p}</td><td>${x.ca}</td><td>$${x.pr}</td><td>$${x.ca*x.pr}</td>
-  <td><input type="checkbox" ${x.s?"checked":""} onclick="event.stopPropagation();toggle(${i})"></td>`;
-  tb.appendChild(tr); t+=x.ca*x.pr;
+
+  tr.innerHTML=`
+   <td>${x.c}</td>
+   <td>${x.p}</td>
+   <td>${x.ca}</td>
+   <td>$${x.pr}</td>
+   <td>$${x.ca*x.pr}</td>
+   <td><input type="checkbox" ${x.s?"checked":""}
+    onclick="event.stopPropagation();toggle(${i})"></td>`;
+  lista.appendChild(tr);
+  t+=x.ca*x.pr;
  });
+
  total.innerText="Total: $"+t;
+ localStorage.setItem("compras",JSON.stringify(compras));
 }
+
+render();
 </script>
 </body>
 </html>
