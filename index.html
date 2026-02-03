@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supermercado PRO MAX</title>
+
+<link rel="apple-touch-icon" sizes="1024x1024" href="icon-1024.png">
+<link rel="icon" type="image/png" sizes="1024x1024" href="icon-1024.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Supermercado">
+
+<style>
+body{font-family:Arial;margin:0;background:#f4f6f8}
+header{background:#2e7d32;color:#fff;padding:14px;text-align:center;font-size:20px}
+.container{padding:15px}
+select,input,button{width:100%;padding:12px;margin:6px 0;font-size:16px}
+button{border:none;border-radius:6px}
+.green{background:#2e7d32;color:#fff}
+.red{background:#c62828;color:#fff}
+.orange{background:#ef6c00;color:#fff}
+table{width:100%;border-collapse:collapse;margin-top:15px}
+th,td{border:1px solid #ccc;padding:8px;text-align:center}
+tr.surtido{background:#c8e6c9;text-decoration:line-through}
+hr{margin:15px 0}
+.oculto{display:none}
+</style>
+</head>
+<body>
+<header>🛒 Supermercado PRO MAX</header>
+<div class="container">
+<select id="categoria"></select>
+<input type="text" id="buscador" placeholder="Buscar producto por nombre">
+<select id="producto"></select>
+<input type="number" id="cantidad" value="1" min="1">
+<input type="number" id="precio" placeholder="Precio" min="0" step="0.01">
+<div class="oculto">
+<hr>
+<input type="text" id="nuevoProducto" placeholder="Nuevo producto">
+<button class="green" onclick="altaProducto()">➕ Alta producto</button>
+<hr>
+</div>
+<button class="green" onclick="agregar()">Agregar</button>
+<button class="red" onclick="eliminar()">Eliminar seleccionado</button>
+<button class="orange" onclick="limpiar()">Limpiar lista</button>
+<table>
+<thead>
+<tr><th>Cat.</th><th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th><th>✔</th></tr>
+</thead>
+<tbody id="lista"></tbody>
+</table>
+<h3 id="total">Total: $0</h3>
+</div>
+<script>
+const catalogo = {
+ "Abarrotes":["Arroz","Frijol","Lentejas"],
+ "Carnes":["Carne molida de res","Bistec de res"],
+ "Lácteos":["Leche entera","Queso fresco"],
+ "Limpieza":["Detergente en polvo","Cloro"]
+};
+let compras = JSON.parse(localStorage.getItem("compras")) || [];
+let sel=null;
+const cat=categoria, prod=producto, buscador=document.getElementById("buscador");
+function cargarCategorias(){cat.innerHTML="";Object.keys(catalogo).forEach(c=>cat.add(new Option(c,c)));cargarProductos();}
+function cargarProductos(f=""){prod.innerHTML="";catalogo[cat.value].filter(p=>p.toLowerCase().includes(f.toLowerCase())).forEach(p=>prod.add(new Option(p,p)));}
+cat.onchange=()=>{buscador.value="";cargarProductos();};
+buscador.oninput=()=>cargarProductos(buscador.value);
+cargarCategorias();
+function agregar(){if(!precio.value)return;compras.push({c:cat.value,p:prod.value,ca:+cantidad.value,pr:+precio.value,s:false});render();}
+function eliminar(){if(sel!=null){compras.splice(sel,1);sel=null;render();}}
+function limpiar(){if(confirm("¿Limpiar lista?")){compras=[];render();}}
+function toggle(i){compras[i].s=!compras[i].s;render();}
+function render(){lista.innerHTML="";let t=0;compras.forEach((x,i)=>{let tr=document.createElement("tr");if(x.s)tr.className="surtido";tr.onclick=()=>sel=i;tr.innerHTML=`<td>${x.c}</td><td>${x.p}</td><td>${x.ca}</td><td>$${x.pr}</td><td>$${x.ca*x.pr}</td><td><input type="checkbox" ${x.s?"checked":""} onclick="event.stopPropagation();toggle(${i})"></td>`;lista.appendChild(tr);t+=x.ca*x.pr;});total.innerText="Total: $"+t;localStorage.setItem("compras",JSON.stringify(compras));}
+render();
+</script>
+</body>
+</html>
