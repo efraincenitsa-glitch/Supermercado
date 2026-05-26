@@ -40,8 +40,10 @@
 
 <button class="green" onclick="agregar()">Agregar</button>
 <button class="green" onclick="capturarPrecio()">Capturar precio al seleccionado</button>
+<button class="orange" onclick="editarCantidad()">Editar cantidad del seleccionado</button>
 <button class="red" onclick="eliminar()">Eliminar seleccionado</button>
 <button class="orange" onclick="limpiar()">Limpiar lista</button>
+
 
 
   <table>
@@ -174,6 +176,30 @@ function capturarPrecio(){
   compras[sel].pr = precioNum;
   render();
 }
+
+function editarCantidad(){
+  if(sel === null || sel < 0 || sel >= compras.length){
+    alert("Selecciona un producto de la lista");
+    return;
+  }
+
+  const item = compras[sel];
+  const nuevaCantidad = prompt(`Ingresa la nueva cantidad de "${item.p}":`, item.ca);
+
+  if(nuevaCantidad === null) return; // canceló
+
+  const cantidadNum = parseInt(nuevaCantidad, 10);
+
+  if(isNaN(cantidadNum) || cantidadNum <= 0){
+    alert("Ingresa una cantidad válida");
+    return;
+  }
+
+  compras[sel].ca = cantidadNum;
+  render();
+}
+
+
 
 function limpiar(){
   if(confirm("¿Limpiar lista?")){
