@@ -36,11 +36,13 @@
   <input type="text" id="buscador" placeholder="Buscar producto por nombre">
   <select id="producto"></select>
   <input type="number" id="cantidad" value="1" min="1">
-  <input type="number" id="precio" placeholder="Precio" min="0" step="0.01">
 
-  <button class="green" onclick="agregar()">Agregar</button>
-  <button class="red" onclick="eliminar()">Eliminar seleccionado</button>
-  <button class="orange" onclick="limpiar()">Limpiar lista</button>
+
+<button class="green" onclick="agregar()">Agregar</button>
+<button class="green" onclick="capturarPrecio()">Capturar precio al seleccionado</button>
+<button class="red" onclick="eliminar()">Eliminar seleccionado</button>
+<button class="orange" onclick="limpiar()">Limpiar lista</button>
+
 
   <table>
     <thead>
@@ -79,6 +81,9 @@ let sel = null;
 const categoria = document.getElementById("categoria");
 const producto = document.getElementById("producto");
 const buscador = document.getElementById("buscador");
+const cantidad = document.getElementById("cantidad");
+const lista = document.getElementById("lista");
+const total = document.getElementById("total");
 
 function cargarCategorias(){
   categoria.innerHTML = "";
@@ -112,21 +117,30 @@ categoria.onchange = ()=>{
 buscador.oninput = ()=>cargarProductos(buscador.value);
 
 function agregar(){
-  if(!precio.value) return;
+  if(!producto.value){
+    alert("Selecciona un producto");
+    return;
+  }
+
+  if(!cantidad.value || +cantidad.value <= 0){
+    alert("Captura una cantidad válida");
+    return;
+  }
 
   let catReal = categoria.value;
   if(catReal === "Todos"){
-    catReal = Object.keys(catalogo).find(k=>catalogo[k].includes(producto.value));
+    catReal = Object.keys(catalogo).find(k => catalogo[k].includes(producto.value));
   }
 
   compras.push({
     c: catReal,
     p: producto.value,
     ca: +cantidad.value,
-    pr: +precio.value,
+    pr: 0, // ✅ Se agrega sin precio
     s: false
   });
 
+  cantidad.value = 1;
   render();
 }
 
@@ -137,6 +151,28 @@ function eliminar(){
     sel = null;
     render();
   }
+}
+
+function capturarPrecio(){
+  if(sel === null || sel < 0 || sel >= compras.length){
+    alert("Selecciona un producto de la lista");
+    return;
+  }
+
+  const item = compras[sel];
+  const precioCapturado = prompt(`Ingresa el precio de "${item.p}":`, item.pr > 0 ? item.pr : "0");
+
+  if(precioCapturado === null) return; // canceló
+
+  const precioNum = parseFloat(precioCapturado);
+
+  if(isNaN(precioNum) || precioNum < 0){
+    alert("Ingresa un precio válido");
+    return;
+  }
+
+  compras[sel].pr = precioNum;
+  render();
 }
 
 function limpiar(){
@@ -168,23 +204,23 @@ function render(){
       render();
     };
 
-    tr.innerHTML = `
-      <td>${x.c}</td>
-      <td>${x.p}</td>
-      <td>${x.ca}</td>
-      <td>$${x.pr}</td>
-      <td>$${x.ca * x.pr}</td>
-      <td>
-        <input type="checkbox" ${x.s?"checked":""}
-        onclick="event.stopPropagation();toggle(${i})">
-      </td>
-    `;
+tr.innerHTML = `
+  <td>${x.c}</td>
+  <td>${x.p}</td>
+  <td>${x.ca}</td>
+  <td>${x.pr > 0 ? '$' + x.pr.toFixed(2) : 'Pendiente'}</td>
+  <td>$${(x.ca * x.pr).toFixed(2)}</td>
+  <td>
+    <input type="checkbox" ${x.s ? "checked" : ""}
+    onclick="event.stopPropagation();toggle(${i})">
+  </td>
+`;
 
     lista.appendChild(tr);
     totalCompra += x.ca * x.pr;
   });
 
-  total.innerText = "Total: $" + totalCompra;
+  total.innerText = "Total: $" + totalCompra.toFixed(2);
   localStorage.setItem("compras", JSON.stringify(compras));
 }
 
