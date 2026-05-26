@@ -216,32 +216,46 @@ function toggle(i){
 }
 
 function render(){
-  lista.innerHTML="";
+  lista.innerHTML = "";
   let totalCompra = 0;
 
-  compras.forEach((x,i)=>{
+  // ✅ Crear copia con índice original
+  const comprasOrdenadas = compras
+    .map((item, indexOriginal) => ({ ...item, indexOriginal }))
+    .sort((a, b) => {
+      // Primero por categoría
+      const cat = a.c.localeCompare(b.c, 'es', { sensitivity: 'base' });
+      if(cat !== 0) return cat;
+
+      // Si la categoría es igual, ordenar por producto
+      return a.p.localeCompare(b.p, 'es', { sensitivity: 'base' });
+    });
+
+  comprasOrdenadas.forEach((x) => {
+    const i = x.indexOriginal; // ✅ índice real dentro de compras
+
     const tr = document.createElement("tr");
     tr.dataset.index = i;
 
     if(x.s) tr.classList.add("surtido");
     if(i === sel) tr.classList.add("selected");
 
-    tr.onclick = ()=>{
+    tr.onclick = () => {
       sel = i;
       render();
     };
 
-tr.innerHTML = `
-  <td>${x.c}</td>
-  <td>${x.p}</td>
-  <td>${x.ca}</td>
-  <td>${x.pr > 0 ? '$' + x.pr.toFixed(2) : 'Pendiente'}</td>
-  <td>$${(x.ca * x.pr).toFixed(2)}</td>
-  <td>
-    <input type="checkbox" ${x.s ? "checked" : ""}
-    onclick="event.stopPropagation();toggle(${i})">
-  </td>
-`;
+    tr.innerHTML = `
+      <td>${x.c}</td>
+      <td>${x.p}</td>
+      <td>${x.ca}</td>
+      <td>${x.pr > 0 ? '$' + x.pr.toFixed(2) : 'Pendiente'}</td>
+      <td>$${(x.ca * x.pr).toFixed(2)}</td>
+      <td>
+        <input type="checkbox" ${x.s ? "checked" : ""}
+        onclick="event.stopPropagation();toggle(${i})">
+      </td>
+    `;
 
     lista.appendChild(tr);
     totalCompra += x.ca * x.pr;
