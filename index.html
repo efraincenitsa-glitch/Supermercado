@@ -14,540 +14,660 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <style>
-  :root{
-    --bg:#f4f6f8;
-    --card:#ffffff;
-    --text:#1f2937;
-    --muted:#6b7280;
-    --primary:#2e7d32;
-    --primary-dark:#1b5e20;
-    --danger:#c62828;
-    --danger-dark:#8e0000;
-    --warning:#ef6c00;
-    --warning-dark:#bf5200;
-    --blue:#1565c0;
-    --blue-dark:#0d47a1;
-    --border:#d1d5db;
-    --soft:#eef2f7;
-    --selected:#ffe082;
-    --surtido:#c8e6c9;
-    --expensive:#ffebee;
-    --shadow:0 8px 24px rgba(15,23,42,.10);
-    --radius:16px;
-  }
+:root{
+  --bg:#f4f6f8;
+  --card:#ffffff;
+  --text:#111827;
+  --muted:#6b7280;
+  --primary:#2e7d32;
+  --primary-dark:#1b5e20;
+  --danger:#c62828;
+  --warning:#ef6c00;
+  --blue:#1565c0;
+  --border:#d1d5db;
+  --soft:#eef2f7;
+  --selected:#ffe082;
+  --surtido:#dcfce7;
+  --pending:#fff7ed;
+  --shadow:0 8px 24px rgba(15,23,42,.10);
+  --radius:18px;
+}
 
-  *{
-    box-sizing:border-box;
-  }
+*{
+  box-sizing:border-box;
+}
 
-  body{
-    font-family:Arial, Helvetica, sans-serif;
-    margin:0;
-    background:var(--bg);
-    color:var(--text);
-    -webkit-tap-highlight-color:transparent;
-  }
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  -webkit-tap-highlight-color:transparent;
+}
 
-  body.dark{
-    --bg:#111827;
-    --card:#1f2937;
-    --text:#f9fafb;
-    --muted:#d1d5db;
-    --border:#374151;
-    --soft:#273449;
-    --selected:#7c5a00;
-    --surtido:#1b5e20;
-    --expensive:#5b1f1f;
-    --shadow:0 8px 24px rgba(0,0,0,.35);
-  }
+body.dark{
+  --bg:#111827;
+  --card:#1f2937;
+  --text:#f9fafb;
+  --muted:#d1d5db;
+  --border:#374151;
+  --soft:#273449;
+  --selected:#7c5a00;
+  --surtido:#12351f;
+  --pending:#3b2a13;
+  --shadow:0 8px 24px rgba(0,0,0,.35);
+}
 
-  header{
-    position:sticky;
-    top:0;
-    z-index:50;
-    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-    color:#fff;
-    padding:16px 14px;
-    text-align:center;
-    box-shadow:0 4px 14px rgba(0,0,0,.18);
-  }
+header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:white;
+  padding:10px 12px;
+  text-align:center;
+  box-shadow:0 4px 14px rgba(0,0,0,.20);
+}
 
-  header .title{
-    font-size:21px;
-    font-weight:800;
-    letter-spacing:.2px;
-  }
+header .title{
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:.2px;
+}
 
+header .subtitle{
+  font-size:12px;
+  opacity:.9;
+  margin-top:2px;
+}
+
+.container{
+  width:100%;
+  max-width:920px;
+  margin:0 auto;
+  padding:12px;
+  padding-bottom:145px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:14px;
+  margin-bottom:12px;
+  box-shadow:var(--shadow);
+}
+
+.section-title{
+  margin:0 0 10px;
+  font-size:17px;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.section-title span{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+}
+
+label{
+  display:block;
+  font-size:13px;
+  font-weight:800;
+  margin:8px 0 4px;
+  color:var(--muted);
+}
+
+select,
+input,
+button,
+textarea{
+  width:100%;
+  padding:12px;
+  margin:5px 0;
+  font-size:16px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  outline:none;
+}
+
+select:focus,
+input:focus,
+textarea:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(46,125,50,.18);
+}
+
+button{
+  border:none;
+  cursor:pointer;
+  font-weight:900;
+  color:white;
+  user-select:none;
+}
+
+button:active{
+  transform:scale(.985);
+}
+
+.green{background:var(--primary);}
+.red{background:var(--danger);}
+.orange{background:var(--warning);}
+.blue{background:var(--blue);}
+.gray{background:#4b5563;}
+
+.row{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+}
+
+.row-2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.row-3{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+}
+
+.buttons-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:8px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr;
+  gap:8px;
+}
+
+.stat{
+  background:var(--soft);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:10px 6px;
+  text-align:center;
+}
+
+.stat .num{
+  font-size:18px;
+  font-weight:900;
+}
+
+.stat .txt{
+  font-size:11px;
+  color:var(--muted);
+  font-weight:800;
+  margin-top:3px;
+}
+
+.progress-box{
+  margin-top:12px;
+}
+
+.progress-info{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+  color:var(--muted);
+  font-weight:800;
+  margin-bottom:6px;
+}
+
+.progress-track{
+  width:100%;
+  height:12px;
+  background:var(--soft);
+  border-radius:999px;
+  overflow:hidden;
+  border:1px solid var(--border);
+}
+
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,var(--primary),#66bb6a);
+  border-radius:999px;
+  transition:width .25s ease;
+}
+
+.status{
+  margin-top:8px;
+  padding:10px;
+  border-radius:12px;
+  font-size:13px;
+  font-weight:800;
+  display:none;
+}
+
+.status.ok{
+  display:block;
+  color:#14532d;
+  background:#dcfce7;
+  border:1px solid #86efac;
+}
+
+.status.error{
+  display:block;
+  color:#7f1d1d;
+  background:#fee2e2;
+  border:1px solid #fecaca;
+}
+
+body.dark .status.ok{
+  color:#dcfce7;
+  background:#14532d;
+  border-color:#166534;
+}
+
+body.dark .status.error{
+  color:#fee2e2;
+  background:#7f1d1d;
+  border-color:#991b1b;
+}
+
+.hint{
+  background:var(--soft);
+  border:1px dashed var(--border);
+  color:var(--muted);
+  padding:10px;
+  border-radius:12px;
+  font-size:13px;
+  line-height:1.4;
+  margin-top:8px;
+}
+
+.hidden{
+  display:none !important;
+}
+
+/* ===== NUEVA LISTA TIPO TARJETAS ===== */
+
+.lista-cards{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:12px;
+}
+
+.item-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-left:7px solid var(--warning);
+  border-radius:18px;
+  padding:12px;
+  box-shadow:0 4px 14px rgba(15,23,42,.08);
+  position:relative;
+}
+
+.item-card.surtido{
+  border-left-color:var(--primary);
+  background:var(--surtido);
+  opacity:.86;
+}
+
+.item-card.selected{
+  outline:3px solid rgba(21,101,192,.35);
+  background:var(--selected);
+}
+
+.item-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
+}
+
+.item-name{
+  font-size:17px;
+  font-weight:900;
+  line-height:1.25;
+}
+
+.item-status{
+  font-size:12px;
+  font-weight:900;
+  padding:6px 9px;
+  border-radius:999px;
+  white-space:nowrap;
+}
+
+.item-status.pending{
+  background:#ffedd5;
+  color:#9a3412;
+}
+
+.item-status.done{
+  background:#bbf7d0;
+  color:#14532d;
+}
+
+body.dark .item-status.pending{
+  background:#7c2d12;
+  color:#ffedd5;
+}
+
+body.dark .item-status.done{
+  background:#14532d;
+  color:#bbf7d0;
+}
+
+.item-category{
+  margin-top:6px;
+}
+
+.badge{
+  display:inline-block;
+  background:var(--soft);
+  color:var(--text);
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:5px 10px;
+  font-size:12px;
+  font-weight:900;
+}
+
+.item-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+
+.item-data{
+  background:rgba(255,255,255,.55);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:9px;
+}
+
+body.dark .item-data{
+  background:rgba(17,24,39,.35);
+}
+
+.item-data .label{
+  font-size:11px;
+  color:var(--muted);
+  font-weight:900;
+  text-transform:uppercase;
+}
+
+.item-data .value{
+  font-size:16px;
+  font-weight:900;
+  margin-top:2px;
+}
+
+.item-data.total-line{
+  grid-column:1 / -1;
+  background:linear-gradient(135deg,rgba(46,125,50,.16),rgba(46,125,50,.06));
+}
+
+.price-pending{
+  color:var(--warning);
+}
+
+.item-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr;
+  gap:7px;
+  margin-top:10px;
+}
+
+.item-actions button{
+  font-size:12px;
+  padding:9px 5px;
+  border-radius:12px;
+  margin:0;
+}
+
+.item-check{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:10px;
+  font-size:14px;
+  font-weight:900;
+  color:var(--muted);
+}
+
+.item-check input{
+  width:22px;
+  height:22px;
+  margin:0;
+}
+
+.empty{
+  text-align:center;
+  color:var(--muted);
+  font-weight:800;
+  padding:20px;
+  background:var(--soft);
+  border:1px dashed var(--border);
+  border-radius:16px;
+}
+
+.bottom-bar{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:70;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(14px);
+  border-top:1px solid var(--border);
+  padding:8px 10px;
+}
+
+body.dark .bottom-bar{
+  background:rgba(17,24,39,.92);
+}
+
+.bottom-inner{
+  max-width:920px;
+  margin:0 auto;
+}
+
+.bottom-total{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:7px;
+  padding:9px 12px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:white;
+  border-radius:16px;
+}
+
+.bottom-total .label{
+  font-size:12px;
+  opacity:.9;
+  font-weight:700;
+}
+
+.bottom-total .amount{
+  font-size:22px;
+  font-weight:900;
+}
+
+.bottom-buttons{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+}
+
+.bottom-buttons button{
+  padding:11px 6px;
+  font-size:14px;
+  border-radius:14px;
+  margin:0;
+}
+
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:120;
+  padding:18px;
+}
+
+.modal-backdrop.show{
+  display:flex;
+}
+
+.modal{
+  width:100%;
+  max-width:430px;
+  background:var(--card);
+  color:var(--text);
+  border-radius:20px;
+  padding:18px;
+  box-shadow:0 24px 80px rgba(0,0,0,.35);
+  border:1px solid var(--border);
+}
+
+.modal h3{
+  margin:0 0 8px;
+  font-size:18px;
+}
+
+.modal p{
+  margin:0 0 12px;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.4;
+}
+
+.modal-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+
+.print-header{
+  display:none;
+}
+
+@media(min-width:720px){
   header .subtitle{
-    font-size:12px;
-    opacity:.9;
-    margin-top:3px;
-  }
-
-  .container{
-    width:100%;
-    max-width:1100px;
-    margin:0 auto;
-    padding:14px;
-    padding-bottom:90px;
-  }
-
-  .card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:14px;
-    margin-bottom:14px;
-    box-shadow:var(--shadow);
-  }
-
-  .section-title{
-    margin:0 0 10px;
-    font-size:16px;
-    font-weight:800;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-  }
-
-  .section-title span{
-    color:var(--muted);
-    font-size:12px;
-    font-weight:600;
-  }
-
-  label{
     display:block;
-    font-size:13px;
-    font-weight:700;
-    margin:8px 0 4px;
-    color:var(--muted);
-  }
-
-  select,
-  input,
-  button,
-  textarea{
-    width:100%;
-    padding:12px;
-    margin:5px 0;
-    font-size:16px;
-    border-radius:12px;
-    border:1px solid var(--border);
-    background:var(--card);
-    color:var(--text);
-    outline:none;
-  }
-
-  select:focus,
-  input:focus,
-  textarea:focus{
-    border-color:var(--primary);
-    box-shadow:0 0 0 3px rgba(46,125,50,.18);
-  }
-
-  button{
-    border:none;
-    cursor:pointer;
-    font-weight:800;
-    color:#fff;
-    transition:transform .08s ease, opacity .15s ease, filter .15s ease;
-    user-select:none;
-  }
-
-  button:active{
-    transform:scale(.985);
-  }
-
-  button:disabled{
-    opacity:.45;
-    cursor:not-allowed;
-  }
-
-  .green{background:var(--primary);}
-  .green:hover{filter:brightness(.96);}
-
-  .red{background:var(--danger);}
-  .red:hover{filter:brightness(.96);}
-
-  .orange{background:var(--warning);}
-  .orange:hover{filter:brightness(.96);}
-
-  .blue{background:var(--blue);}
-  .blue:hover{filter:brightness(.96);}
-
-  .gray{
-    background:#4b5563;
   }
 
   .row{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:8px;
-  }
-
-  .row-2{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
-  }
-
-  .row-3{
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr;
-    gap:8px;
+    grid-template-columns:1fr 1fr 140px;
+    align-items:end;
   }
 
   .buttons-grid{
+    grid-template-columns:repeat(4,1fr);
+  }
+
+  .lista-cards{
     display:grid;
-    grid-template-columns:1fr;
-    gap:8px;
-    margin-top:8px;
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+@media(max-width:480px){
+  header .title{
+    font-size:20px;
+  }
+
+  header .subtitle{
+    display:none;
+  }
+
+  .container{
+    padding:10px;
+    padding-bottom:145px;
+  }
+
+  .card{
+    padding:12px;
   }
 
   .stats{
-    display:grid;
     grid-template-columns:1fr 1fr;
-    gap:10px;
   }
 
-  .stat{
-    background:var(--soft);
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding:12px;
-    text-align:center;
-  }
-
-  .stat .num{
-    font-size:20px;
-    font-weight:900;
-  }
-
-  .stat .txt{
-    font-size:12px;
-    color:var(--muted);
-    margin-top:3px;
-    font-weight:700;
-  }
-
-  .total-box{
-    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-    color:white;
-    border-radius:var(--radius);
-    padding:16px;
-    text-align:center;
-    box-shadow:var(--shadow);
-  }
-
-  .total-box .total-label{
-    font-size:13px;
-    opacity:.9;
-  }
-
-  .total-box .total-amount{
-    font-size:30px;
-    font-weight:900;
-    margin-top:4px;
-  }
-
-  .table-wrap{
-    width:100%;
-    overflow:auto;
-    border-radius:14px;
-    border:1px solid var(--border);
-  }
-
-  table{
-    width:100%;
-    min-width:760px;
-    border-collapse:collapse;
-    background:var(--card);
-  }
-
-  th,
-  td{
-    border-bottom:1px solid var(--border);
-    padding:10px 8px;
-    text-align:center;
-    font-size:14px;
-  }
-
-  th{
-    position:sticky;
-    top:0;
-    z-index:5;
-    background:var(--soft);
-    color:var(--text);
-    font-size:13px;
-  }
-
-  tr{
-    transition:background .12s ease;
-  }
-
-  tr:hover{
-    background:rgba(46,125,50,.08);
-  }
-
-  tr.surtido{
-    background:var(--surtido);
-    text-decoration:line-through;
-    opacity:.78;
-  }
-
-  tr.selected{
-    background-color:var(--selected) !important;
-    outline:3px solid rgba(239,108,0,.35);
-  }
-
-  tr.expensive:not(.surtido):not(.selected){
-    background:var(--expensive);
-  }
-
-  .producto-cell{
-    text-align:left;
-    font-weight:700;
-  }
-
-  .cat-badge{
-    display:inline-block;
-    padding:4px 8px;
-    border-radius:999px;
-    background:var(--soft);
-    border:1px solid var(--border);
-    font-size:12px;
-    font-weight:800;
-    white-space:nowrap;
-  }
-
-  .price-pending{
-    color:var(--warning);
-    font-weight:900;
-  }
-
-  .actions-mini{
-    display:flex;
-    gap:5px;
-    justify-content:center;
-  }
-
-  .mini-btn{
-    width:auto;
-    padding:7px 9px;
-    margin:0;
-    border-radius:10px;
-    font-size:12px;
-  }
-
-  .empty{
-    padding:22px;
-    text-align:center;
-    color:var(--muted);
-    font-weight:700;
-  }
-
-  .hint{
-    background:var(--soft);
-    border:1px dashed var(--border);
-    color:var(--muted);
-    padding:10px;
-    border-radius:12px;
-    font-size:13px;
-    line-height:1.4;
-  }
-
-  .status{
-    margin-top:8px;
-    padding:10px;
-    border-radius:12px;
-    font-size:13px;
-    font-weight:800;
-    display:none;
-  }
-
-  .status.ok{
-    display:block;
-    color:#14532d;
-    background:#dcfce7;
-    border:1px solid #86efac;
-  }
-
-  .status.error{
-    display:block;
-    color:#7f1d1d;
-    background:#fee2e2;
-    border:1px solid #fecaca;
-  }
-
-  body.dark .status.ok{
-    color:#dcfce7;
-    background:#14532d;
-    border-color:#166534;
-  }
-
-  body.dark .status.error{
-    color:#fee2e2;
-    background:#7f1d1d;
-    border-color:#991b1b;
-  }
-
-  .file-input{
-    background:var(--soft);
-  }
-
-  .bottom-bar{
-    position:fixed;
-    left:0;
-    right:0;
-    bottom:0;
-    z-index:60;
-    background:rgba(255,255,255,.88);
-    backdrop-filter:blur(12px);
-    border-top:1px solid var(--border);
-    padding:8px 12px;
-  }
-
-  body.dark .bottom-bar{
-    background:rgba(17,24,39,.88);
-  }
-
-  .bottom-inner{
-    max-width:1100px;
-    margin:0 auto;
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr;
-    gap:8px;
-  }
-
-  .bottom-inner button{
-    padding:10px 8px;
-    font-size:13px;
-    border-radius:14px;
-  }
-
-  .modal-backdrop{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.55);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    z-index:100;
-    padding:18px;
-  }
-
-  .modal-backdrop.show{
-    display:flex;
-  }
-
-  .modal{
-    width:100%;
-    max-width:420px;
-    background:var(--card);
-    color:var(--text);
-    border-radius:20px;
-    padding:18px;
-    box-shadow:0 24px 80px rgba(0,0,0,.35);
-    border:1px solid var(--border);
-  }
-
-  .modal h3{
-    margin:0 0 8px;
-    font-size:18px;
-  }
-
-  .modal p{
-    margin:0 0 12px;
-    color:var(--muted);
-    font-size:14px;
-    line-height:1.4;
-  }
-
-  .modal-actions{
-    display:grid;
+  .buttons-grid{
     grid-template-columns:1fr 1fr;
-    gap:8px;
-    margin-top:10px;
   }
 
-  .hidden{
+  .item-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .item-actions{
+    grid-template-columns:1fr 1fr 1fr 1fr;
+  }
+
+  .item-actions button{
+    font-size:11px;
+  }
+}
+
+@media print{
+  header,
+  .form-card,
+  .tools-card,
+  .bottom-bar,
+  .item-actions,
+  .item-check,
+  .no-print{
     display:none !important;
   }
 
+  body{
+    background:white;
+    color:black;
+  }
+
+  .container{
+    padding:0;
+    max-width:none;
+  }
+
+  .card{
+    box-shadow:none;
+    border:none;
+  }
+
   .print-header{
-    display:none;
+    display:block;
+    text-align:center;
+    margin-bottom:15px;
   }
 
-  @media(min-width:720px){
-    .row{
-      grid-template-columns:1fr 1fr 140px;
-      align-items:end;
-    }
-
-    .buttons-grid{
-      grid-template-columns:repeat(4,1fr);
-    }
-
-    .stats{
-      grid-template-columns:repeat(4,1fr);
-    }
+  .lista-cards{
+    display:block;
   }
 
-  @media print{
-    body{
-      background:#fff;
-      color:#000;
-    }
-
-    header,
-    .card.form-card,
-    .card.tools-card,
-    .bottom-bar,
-    .actions-mini,
-    .no-print{
-      display:none !important;
-    }
-
-    .container{
-      max-width:none;
-      padding:0;
-    }
-
-    .card{
-      box-shadow:none;
-      border:none;
-      padding:0;
-    }
-
-    .print-header{
-      display:block;
-      text-align:center;
-      margin-bottom:16px;
-    }
-
-    table{
-      min-width:0;
-      font-size:11px;
-    }
-
-    th,
-    td{
-      font-size:11px;
-      padding:6px;
-      color:#000;
-      border:1px solid #999;
-    }
-
-    .total-box{
-      box-shadow:none;
-      color:#000;
-      background:#fff;
-      border:2px solid #000;
-      margin-top:12px;
-    }
+  .item-card{
+    page-break-inside:avoid;
+    box-shadow:none;
+    border:1px solid #999;
+    border-left:6px solid #333;
+    margin-bottom:8px;
   }
+}
 </style>
 </head>
 
@@ -568,7 +688,7 @@
   <div class="card form-card">
     <h2 class="section-title">
       Agregar producto
-      <span>Funciona sin Internet</span>
+      <span>Offline</span>
     </h2>
 
     <div class="row">
@@ -578,7 +698,7 @@
       </div>
 
       <div>
-        <label for="buscador">Buscar producto del catálogo</label>
+        <label for="buscador">Buscar producto</label>
         <input type="text" id="buscador" placeholder="Ejemplo: arroz, leche, jabón">
       </div>
 
@@ -593,9 +713,9 @@
 
     <div class="buttons-grid">
       <button class="green" onclick="agregar()">➕ Agregar</button>
-      <button class="blue" onclick="abrirModalProductoManual()">✍️ Producto manual</button>
-      <button class="orange" onclick="duplicarSeleccionado()">📋 Duplicar seleccionado</button>
-      <button class="gray" onclick="toggleDarkMode()">🌙 Modo oscuro</button>
+      <button class="blue" onclick="abrirModalProductoManual()">✍️ Manual</button>
+      <button class="orange" onclick="duplicarSeleccionado()">📋 Duplicar</button>
+      <button class="gray" onclick="toggleDarkMode()">🌙 Oscuro</button>
     </div>
 
     <div id="mensaje" class="status"></div>
@@ -604,7 +724,7 @@
   <div class="card">
     <h2 class="section-title">
       Resumen
-      <span id="estadoSeleccion">Sin producto seleccionado</span>
+      <span id="estadoSeleccion">Sin selección</span>
     </h2>
 
     <div class="stats">
@@ -628,6 +748,16 @@
         <div class="txt">Sin precio</div>
       </div>
     </div>
+
+    <div class="progress-box">
+      <div class="progress-info">
+        <span>Avance de surtido</span>
+        <span id="porcentajeAvance">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="barraAvance"></div>
+      </div>
+    </div>
   </div>
 
   <div class="card tools-card">
@@ -637,8 +767,8 @@
     </h2>
 
     <div class="row-2">
-      <button class="green" onclick="abrirModalPrecio()">💲 Capturar precio</button>
-      <button class="orange" onclick="abrirModalCantidad()">🔢 Editar cantidad</button>
+      <button class="green" onclick="abrirModalPrecio()">💲 Precio</button>
+      <button class="orange" onclick="abrirModalCantidad()">🔢 Cantidad</button>
     </div>
 
     <div class="row-2">
@@ -647,20 +777,20 @@
     </div>
 
     <div class="row-2">
-      <button class="green" onclick="exportarBackup()">💾 Exportar respaldo</button>
-      <button class="orange" onclick="document.getElementById('archivoImportar').click()">📂 Importar respaldo</button>
+      <button class="green" onclick="exportarBackup()">💾 Exportar</button>
+      <button class="orange" onclick="document.getElementById('archivoImportar').click()">📂 Importar</button>
     </div>
 
-    <input class="file-input hidden" type="file" id="archivoImportar" accept=".json,application/json" onchange="importarBackup(event)">
+    <input class="hidden" type="file" id="archivoImportar" accept=".json,application/json" onchange="importarBackup(event)">
 
     <div class="row-2">
-      <button class="red" onclick="eliminar()">🗑️ Eliminar seleccionado</button>
+      <button class="red" onclick="eliminar()">🗑️ Eliminar</button>
       <button class="red" onclick="limpiar()">🧹 Limpiar lista</button>
     </div>
 
     <div class="hint">
-      Tip: selecciona un producto de la tabla tocando su fila. Después puedes capturar precio,
-      editar cantidad, duplicar o eliminar.
+      Toca una tarjeta para seleccionarla. Desde cada producto también puedes capturar precio,
+      editar cantidad, duplicar, eliminar o marcar como surtido.
     </div>
   </div>
 
@@ -670,39 +800,29 @@
       <span>Pendientes arriba</span>
     </h2>
 
-    <label for="buscarLista">Buscar dentro de la lista agregada</label>
+    <label for="buscarLista">Buscar dentro de la lista</label>
     <input type="text" id="buscarLista" placeholder="Filtrar lista actual" oninput="render()">
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Cat.</th>
-            <th>Producto</th>
-            <th>Cant.</th>
-            <th>Precio</th>
-            <th>Subtotal</th>
-            <th>✔</th>
-            <th class="no-print">Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="lista"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="total-box">
-    <div class="total-label">Total estimado</div>
-    <div class="total-amount" id="total">$0.00</div>
+    <div id="lista" class="lista-cards"></div>
   </div>
 
 </div>
 
 <div class="bottom-bar">
   <div class="bottom-inner">
-    <button class="green" onclick="agregar()">➕ Agregar</button>
-    <button class="blue" onclick="abrirModalPrecio()">💲 Precio</button>
-    <button class="orange" onclick="copiarLista()">📋 Copiar</button>
+    <div class="bottom-total">
+      <div>
+        <div class="label">Total estimado</div>
+        <div id="bottomProductos" class="label">0 productos</div>
+      </div>
+      <div class="amount" id="total">$0.00</div>
+    </div>
+
+    <div class="bottom-buttons">
+      <button class="green" onclick="agregar()">➕ Agregar</button>
+      <button class="blue" onclick="abrirModalPrecio()">💲 Precio</button>
+      <button class="orange" onclick="copiarLista()">📋 Copiar</button>
+    </div>
   </div>
 </div>
 
@@ -792,7 +912,6 @@ const catalogo = {
     "Semillas de mostaza", "Nuez moscada entera", "Canela en rama",
     "Chocolates de mesa", "Sopa de pasta en sobre", "Harina para hotcakes"
   ],
-
   "Hierbas y especias":[
     "Albahaca", "Oregano", "Tomillo", "Romero", "Cilantro", "Perejil",
     "Eneldo", "Menta", "Hierbabuena", "Salvia", "Laurel", "Ajo", "Curcuma",
@@ -803,7 +922,6 @@ const catalogo = {
     "Semilla de fenogreco", "Azafran", "Vainilla", "Galanga", "Achiote",
     "Epazote", "Avellana dulce"
   ],
-
   "Carnes":[
     "Carne molida de res", "Bistec de res", "Chuleta de res",
     "Costilla de res", "Arrachera", "Diezmillo", "Pechuga de pollo",
@@ -819,7 +937,6 @@ const catalogo = {
     "Camaron cocido", "Pulpo", "Calamar", "Jaiba", "Surimi",
     "Pescado empanizado"
   ],
-
   "Lácteos":[
     "Leche de cabra", "Leche de oveja", "Leche fortificada con calcio",
     "Leche sabor chocolate", "Leche sabor fresa", "Leche sabor vainilla",
@@ -845,15 +962,12 @@ const catalogo = {
     "Margarina lactea", "Crema de leche", "Crema agria", "Suero de leche",
     "Helado", "Paletas de crema", "Flan de leche", "Natilla", "Kefir"
   ],
-
   "Bebidas":[
     "Agua embotellada", "Refrescos", "Jugos", "Cervezas y vinos"
   ],
-
   "Snacks y Dulces":[
     "Papas fritas", "Galletas", "Chocolates", "Mantecaditos", "Chicles"
   ],
-
   "Cereales":[
     "Almendra", "Anacardo", "Avellana", "Cacahuate", "Castana de caju",
     "Castana de Brasil", "Chia", "Coco rallado", "Datil seco", "Higo seco",
@@ -861,11 +975,9 @@ const catalogo = {
     "Semilla de calabaza", "Semilla de girasol", "Semilla de sesamo",
     "Semilla de amapola"
   ],
-
   "Productos de Higiene Personal":[
     "Jabon de baño", "Champu", "Pasta de dientes", "Desodorante", "Bicarbonato"
   ],
-
   "Frutas y Verduras":[
     "Guinear", "Yaca", "Carambolillo", "Pepino ingles", "Col rizada",
     "Col china", "Nabo japones", "Jengibre fresco", "Taro", "Ñame", "Yuca",
@@ -892,7 +1004,6 @@ const catalogo = {
     "Rucula", "Sandia", "Seta", "Tomate", "Toronja", "Tuna", "Uva",
     "Uva verde", "Zapote", "Zanahoria", "Zarzamora"
   ],
-
   "Limpieza":[
     "Detergente en polvo", "Detergente liquido", "Suavizante de telas",
     "Jabon en barra para lavar", "Jabon liquido para manos", "Cloro",
@@ -910,9 +1021,9 @@ const catalogo = {
   ]
 };
 
-const STORAGE_COMPRAS = "supermercado_pro_max_compras";
-const STORAGE_PRECIOS = "supermercado_pro_max_precios";
-const STORAGE_CONFIG = "supermercado_pro_max_config";
+const STORAGE_COMPRAS = "supermercado_pro_max_compras_v3";
+const STORAGE_PRECIOS = "supermercado_pro_max_precios_v3";
+const STORAGE_CONFIG = "supermercado_pro_max_config_v3";
 
 let compras = cargarJSON(STORAGE_COMPRAS, []);
 let preciosGuardados = cargarJSON(STORAGE_PRECIOS, {});
@@ -968,7 +1079,6 @@ function cargarJSON(clave, fallback){
     const valor = localStorage.getItem(clave);
     return valor ? JSON.parse(valor) : fallback;
   }catch(error){
-    console.error("Error leyendo localStorage:", clave, error);
     return fallback;
   }
 }
@@ -1011,7 +1121,7 @@ function mostrarMensaje(texto, tipo = "ok"){
   setTimeout(function(){
     mensaje.className = "status";
     mensaje.textContent = "";
-  }, 2800);
+  }, 2600);
 }
 
 function cargarCategorias(){
@@ -1123,22 +1233,45 @@ function agregar(){
   render();
 
   if(precioHistorico > 0){
-    mostrarMensaje("Producto agregado con precio histórico: " + formatoMoneda(precioHistorico));
+    mostrarMensaje("Producto agregado con precio histórico.");
   }else{
     mostrarMensaje("Producto agregado. Precio pendiente.");
   }
 }
 
+function haySeleccion(){
+  return sel !== null && sel >= 0 && sel < compras.length;
+}
+
+function seleccionar(i){
+  if(i < 0 || i >= compras.length) return;
+  sel = i;
+  render();
+}
+
+function toggle(i){
+  if(i < 0 || i >= compras.length) return;
+  compras[i].s = !compras[i].s;
+  sel = i;
+  render();
+}
+
 function eliminar(){
   if(!haySeleccion()){
-    mostrarMensaje("Selecciona un producto de la lista para eliminar.", "error");
+    mostrarMensaje("Selecciona un producto para eliminar.", "error");
     return;
   }
 
-  const item = compras[sel];
+  eliminarPorIndice(sel);
+}
+
+function eliminarPorIndice(i){
+  if(i < 0 || i >= compras.length) return;
+
+  const item = compras[i];
 
   if(confirm('¿Eliminar "' + item.p + '" de la lista?')){
-    compras.splice(sel,1);
+    compras.splice(i,1);
     sel = null;
     render();
     mostrarMensaje("Producto eliminado.");
@@ -1159,32 +1292,19 @@ function limpiar(){
   }
 }
 
-function haySeleccion(){
-  return sel !== null && sel >= 0 && sel < compras.length;
-}
-
-function toggle(i){
-  if(i < 0 || i >= compras.length) return;
-
-  compras[i].s = !compras[i].s;
-  sel = i;
-  render();
-}
-
-function seleccionar(i){
-  if(i < 0 || i >= compras.length) return;
-
-  sel = i;
-  render();
-}
-
 function duplicarSeleccionado(){
   if(!haySeleccion()){
     mostrarMensaje("Selecciona un producto para duplicarlo.", "error");
     return;
   }
 
-  const original = compras[sel];
+  duplicarPorIndice(sel);
+}
+
+function duplicarPorIndice(i){
+  if(i < 0 || i >= compras.length) return;
+
+  const original = compras[i];
 
   compras.push({
     ...original,
@@ -1200,7 +1320,7 @@ function duplicarSeleccionado(){
 
 function abrirModalPrecio(){
   if(!haySeleccion()){
-    mostrarMensaje("Selecciona un producto de la lista para capturar precio.", "error");
+    mostrarMensaje("Selecciona un producto para capturar precio.", "error");
     return;
   }
 
@@ -1212,6 +1332,11 @@ function abrirModalPrecio(){
   setTimeout(function(){
     document.getElementById("inputPrecio").focus();
   }, 100);
+}
+
+function abrirModalPrecioIndice(i){
+  seleccionar(i);
+  abrirModalPrecio();
 }
 
 function guardarPrecio(){
@@ -1234,12 +1359,12 @@ function guardarPrecio(){
 
   cerrarModal("modalPrecio");
   render();
-  mostrarMensaje("Precio guardado y recordado para próximas compras.");
+  mostrarMensaje("Precio guardado.");
 }
 
 function abrirModalCantidad(){
   if(!haySeleccion()){
-    mostrarMensaje("Selecciona un producto de la lista para editar cantidad.", "error");
+    mostrarMensaje("Selecciona un producto para editar cantidad.", "error");
     return;
   }
 
@@ -1251,6 +1376,11 @@ function abrirModalCantidad(){
   setTimeout(function(){
     document.getElementById("inputCantidadEditar").focus();
   }, 100);
+}
+
+function abrirModalCantidadIndice(i){
+  seleccionar(i);
+  abrirModalCantidad();
 }
 
 function guardarCantidad(){
@@ -1410,56 +1540,88 @@ function render(){
   const comprasOrdenadas = obtenerComprasOrdenadas();
 
   if(comprasOrdenadas.length === 0){
-    const tr = document.createElement("tr");
-    tr.innerHTML = '<td colspan="7" class="empty">No hay productos para mostrar.</td>';
-    lista.appendChild(tr);
+    lista.innerHTML = '<div class="empty">No hay productos para mostrar.</div>';
   }
 
   comprasOrdenadas.forEach(function(x){
     const i = x.indexOriginal;
     const subtotal = (Number(x.ca) || 0) * (Number(x.pr) || 0);
 
-    const tr = document.createElement("tr");
-    tr.dataset.index = i;
+    const card = document.createElement("div");
+    card.className = "item-card";
+    card.dataset.index = i;
 
-    if(x.s) tr.classList.add("surtido");
-    if(i === sel) tr.classList.add("selected");
-    if(Number(x.pr) >= 500) tr.classList.add("expensive");
+    if(x.s) card.classList.add("surtido");
+    if(i === sel) card.classList.add("selected");
 
-    tr.onclick = function(){
+    card.onclick = function(){
       seleccionar(i);
     };
 
-    tr.innerHTML = `
-      <td><span class="cat-badge">${escapeHTML(x.c)}</span></td>
-      <td class="producto-cell">${escapeHTML(x.p)}</td>
-      <td>${escapeHTML(x.ca)}</td>
-      <td>${x.pr > 0 ? formatoMoneda(x.pr) : '<span class="price-pending">Pendiente</span>'}</td>
-      <td><strong>${formatoMoneda(subtotal)}</strong></td>
-      <td>
-        <input type="checkbox" ${x.s ? "checked" : ""} onclick="event.stopPropagation();toggle(${i})">
-      </td>
-      <td class="no-print">
-        <div class="actions-mini">
-          <button class="mini-btn blue" onclick="event.stopPropagation();seleccionar(${i});abrirModalPrecio()">Precio</button>
-          <button class="mini-btn orange" onclick="event.stopPropagation();seleccionar(${i});abrirModalCantidad()">Cant.</button>
+    card.innerHTML = `
+      <div class="item-top">
+        <div class="item-name">${escapeHTML(x.p)}</div>
+        <div class="item-status ${x.s ? "done" : "pending"}">
+          ${x.s ? "✅ Surtido" : "⬜ Pendiente"}
         </div>
-      </td>
+      </div>
+
+      <div class="item-category">
+        <span class="badge">${escapeHTML(x.c)}</span>
+      </div>
+
+      <div class="item-grid">
+        <div class="item-data">
+          <div class="label">Cantidad</div>
+          <div class="value">${escapeHTML(x.ca)}</div>
+        </div>
+
+        <div class="item-data">
+          <div class="label">Precio</div>
+          <div class="value ${x.pr > 0 ? "" : "price-pending"}">
+            ${x.pr > 0 ? formatoMoneda(x.pr) : "Pendiente"}
+          </div>
+        </div>
+
+        <div class="item-data total-line">
+          <div class="label">Subtotal</div>
+          <div class="value">${formatoMoneda(subtotal)}</div>
+        </div>
+      </div>
+
+      <label class="item-check" onclick="event.stopPropagation();">
+        <input type="checkbox" ${x.s ? "checked" : ""} onchange="toggle(${i})">
+        Marcar como surtido
+      </label>
+
+      <div class="item-actions no-print">
+        <button class="blue" onclick="event.stopPropagation();abrirModalPrecioIndice(${i})">💲</button>
+        <button class="orange" onclick="event.stopPropagation();abrirModalCantidadIndice(${i})">🔢</button>
+        <button class="green" onclick="event.stopPropagation();duplicarPorIndice(${i})">📋</button>
+        <button class="red" onclick="event.stopPropagation();eliminarPorIndice(${i})">🗑️</button>
+      </div>
     `;
 
-    lista.appendChild(tr);
+    lista.appendChild(card);
   });
+
+  const totalProductos = compras.length;
+  const avance = totalProductos > 0 ? Math.round((surtidos / totalProductos) * 100) : 0;
 
   document.getElementById("statArticulos").textContent = totalArticulos;
   document.getElementById("statPendientes").textContent = pendientes;
   document.getElementById("statSurtidos").textContent = surtidos;
   document.getElementById("statSinPrecio").textContent = sinPrecio;
+  document.getElementById("porcentajeAvance").textContent = avance + "%";
+  document.getElementById("barraAvance").style.width = avance + "%";
+
   total.textContent = formatoMoneda(totalCompra);
+  document.getElementById("bottomProductos").textContent = totalProductos + (totalProductos === 1 ? " producto" : " productos");
 
   if(haySeleccion()){
     estadoSeleccion.textContent = "Seleccionado: " + compras[sel].p;
   }else{
-    estadoSeleccion.textContent = "Sin producto seleccionado";
+    estadoSeleccion.textContent = "Sin selección";
   }
 
   guardarTodo();
@@ -1529,10 +1691,9 @@ async function copiarLista(){
       document.body.removeChild(area);
     }
 
-    mostrarMensaje("Lista copiada al portapapeles.");
+    mostrarMensaje("Lista copiada.");
   }catch(error){
-    console.error(error);
-    mostrarMensaje("No se pudo copiar automáticamente. Usa imprimir o exportar.", "error");
+    mostrarMensaje("No se pudo copiar automáticamente.", "error");
   }
 }
 
@@ -1544,7 +1705,7 @@ function imprimirLista(){
 function exportarBackup(){
   const respaldo = {
     app:"Supermercado PRO MAX",
-    version:"2.0",
+    version:"3.0",
     fecha:new Date().toISOString(),
     compras:compras,
     preciosGuardados:preciosGuardados,
@@ -1623,7 +1784,6 @@ function importarBackup(event){
       render();
       mostrarMensaje("Respaldo importado correctamente.");
     }catch(error){
-      console.error(error);
       mostrarMensaje("El archivo no tiene un formato válido.", "error");
     }finally{
       event.target.value = "";
