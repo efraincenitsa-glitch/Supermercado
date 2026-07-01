@@ -379,6 +379,18 @@ body.dark .item-status.done{
   font-weight:900;
 }
 
+.badge-personal{
+  background:#fff3cd;
+  color:#856404;
+  border:1px solid #ffe082;
+}
+
+body.dark .badge-personal{
+  background:#4d3d00;
+  color:#ffd54f;
+  border:1px solid #b8860b;
+}
+
 .item-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -1021,12 +1033,14 @@ const catalogo = {
   ]
 };
 
-const STORAGE_COMPRAS = "supermercado_pro_max_compras_v3";
-const STORAGE_PRECIOS = "supermercado_pro_max_precios_v3";
-const STORAGE_CONFIG = "supermercado_pro_max_config_v3";
+const STORAGE_COMPRAS = "supermercado_pro_max_compras_v4";
+const STORAGE_PRECIOS = "supermercado_pro_max_precios_v4";
+const STORAGE_CONFIG = "supermercado_pro_max_config_v4";
+const STORAGE_CATALOGO_PERSONAL = "supermercado_pro_max_catalogo_personal_v4";
 
 let compras = cargarJSON(STORAGE_COMPRAS, []);
 let preciosGuardados = cargarJSON(STORAGE_PRECIOS, {});
+let catalogoPersonal = cargarJSON(STORAGE_CATALOGO_PERSONAL, {});
 let config = cargarJSON(STORAGE_CONFIG, { dark:false });
 let sel = null;
 
@@ -1084,9 +1098,27 @@ function cargarJSON(clave, fallback){
 }
 
 function guardarTodo(){
-  localStorage.setItem(STORAGE_COMPRAS, JSON.stringify(compras));
-  localStorage.setItem(STORAGE_PRECIOS, JSON.stringify(preciosGuardados));
-  localStorage.setItem(STORAGE_CONFIG, JSON.stringify(config));
+
+  localStorage.setItem(
+    STORAGE_COMPRAS,
+    JSON.stringify(compras)
+  );
+
+  localStorage.setItem(
+    STORAGE_PRECIOS,
+    JSON.stringify(preciosGuardados)
+  );
+
+  localStorage.setItem(
+    STORAGE_CATALOGO_PERSONAL,
+    JSON.stringify(catalogoPersonal)
+  );
+
+  localStorage.setItem(
+    STORAGE_CONFIG,
+    JSON.stringify(config)
+  );
+
 }
 
 function formatoMoneda(valor){
@@ -1125,80 +1157,170 @@ function mostrarMensaje(texto, tipo = "ok"){
 }
 
 function cargarCategorias(){
-  categoria.innerHTML = "";
-  categoria.add(new Option("Todos","Todos"));
 
-  Object.keys(catalogo)
-    .sort((a,b) => a.localeCompare(b, "es", { sensitivity:"base" }))
+  categoria.innerHTML = "";
+
+  categoria.add(
+    new Option("Todos","Todos")
+  );
+
+  const catalogoActual =
+    obtenerCatalogoCompleto();
+
+  Object.keys(catalogoActual)
+    .sort(function(a,b){
+
+      return a.localeCompare(
+        b,
+        "es",
+        { sensitivity:"base" }
+      );
+
+    })
     .forEach(function(c){
-      categoria.add(new Option(c,c));
+
+      categoria.add(
+        new Option(c,c)
+      );
+
     });
 
   cargarProductos();
+
 }
 
 function cargarProductos(filtro = ""){
+
   producto.innerHTML = "";
 
-  const filtroNormalizado = normalizarTexto(filtro);
+  const catalogoActual =
+    obtenerCatalogoCompleto();
+
+  const filtroNormalizado =
+    normalizarTexto(filtro);
+
   let productos = [];
 
   if(categoria.value === "Todos"){
-    Object.keys(catalogo).forEach(function(cat){
-      catalogo[cat].forEach(function(prod){
-        productos.push({
-          categoria:cat,
-          producto:prod,
-          texto:prod + " (" + cat + ")"
-        });
+
+    Object.keys(catalogoActual)
+      .forEach(function(cat){
+
+        catalogoActual[cat]
+          .forEach(function(prod){
+
+            productos.push({
+              categoria:cat,
+              producto:prod,
+              texto:prod + " (" + cat + ")"
+            });
+
+          });
+
       });
-    });
+
   }else{
-    const listaCategoria = catalogo[categoria.value] || [];
-    listaCategoria.forEach(function(prod){
-      productos.push({
-        categoria:categoria.value,
-        producto:prod,
-        texto:prod
+
+    const listaCategoria =
+      catalogoActual[categoria.value]
+      || [];
+
+    listaCategoria
+      .forEach(function(prod){
+
+        productos.push({
+          categoria:categoria.value,
+          producto:prod,
+          texto:prod
+        });
+
       });
-    });
+
   }
 
   productos = productos
     .filter(function(item){
-      return normalizarTexto(item.producto).includes(filtroNormalizado) ||
-             normalizarTexto(item.categoria).includes(filtroNormalizado);
+
+      return (
+        normalizarTexto(item.producto)
+          .includes(filtroNormalizado)
+        ||
+        normalizarTexto(item.categoria)
+          .includes(filtroNormalizado)
+      );
+
     })
     .sort(function(a,b){
-      return a.producto.localeCompare(b.producto, "es", { sensitivity:"base" });
+
+      return a.producto.localeCompare(
+        b.producto,
+        "es",
+        { sensitivity:"base" }
+      );
+
     });
 
   if(productos.length === 0){
-    producto.add(new Option("Sin resultados", ""));
+
+    producto.add(
+      new Option(
+        "Sin resultados",
+        ""
+      )
+    );
+
     return;
+
   }
 
   productos.forEach(function(item){
-    const option = new Option(item.texto, item.producto);
-    option.dataset.categoria = item.categoria;
+
+    const option =
+      new Option(
+        item.texto,
+        item.producto
+      );
+
+    option.dataset.categoria =
+      item.categoria;
+
     producto.add(option);
+
   });
+
 }
 
 function obtenerCategoriaReal(){
-  const option = producto.options[producto.selectedIndex];
 
-  if(option && option.dataset.categoria){
+  const option =
+    producto.options[
+      producto.selectedIndex
+    ];
+
+  if(
+    option &&
+    option.dataset.categoria
+  ){
     return option.dataset.categoria;
   }
 
-  if(categoria.value !== "Todos"){
+  if(
+    categoria.value !== "Todos"
+  ){
     return categoria.value;
   }
 
-  return Object.keys(catalogo).find(function(k){
-    return catalogo[k].includes(producto.value);
-  }) || "Sin categoría";
+  const catalogoActual =
+    obtenerCatalogoCompleto();
+
+  return Object.keys(catalogoActual)
+    .find(function(k){
+
+      return catalogoActual[k]
+        .includes(producto.value);
+
+    }) || "Sin categoría";
+
 }
 
 function agregar(){
@@ -1432,9 +1554,19 @@ function agregarProductoManual(){
     return;
   }
 
-  if(isNaN(precio) || precio < 0){
+if(isNaN(precio) || precio < 0){
     mostrarMensaje("Captura un precio válido o déjalo vacío.", "error");
     return;
+  }
+
+  if(!catalogoPersonal[cat]){
+    catalogoPersonal[cat] = [];
+  }
+
+  if(
+    !catalogoPersonal[cat].includes(prod)
+  ){
+    catalogoPersonal[cat].push(prod);
   }
 
   compras.push({
@@ -1452,9 +1584,16 @@ function agregarProductoManual(){
   }
 
   sel = compras.length - 1;
+
+  cargarCategorias();
+
   cerrarModal("modalProductoManual");
+
   render();
-  mostrarMensaje("Producto manual agregado.");
+
+  mostrarMensaje(
+    "Producto manual agregado."
+  );
 }
 
 function abrirModal(id){
@@ -1479,38 +1618,97 @@ document.querySelectorAll(".modal-backdrop").forEach(function(backdrop){
   });
 });
 
-function toggleDarkMode(){
-  document.body.classList.toggle("dark");
-  config.dark = document.body.classList.contains("dark");
-  guardarTodo();
+function obtenerCatalogoCompleto(){
+
+  const catalogoCompleto = JSON.parse(
+    JSON.stringify(catalogo)
+  );
+
+  Object.keys(catalogoPersonal).forEach(function(cat){
+
+    if(!catalogoCompleto[cat]){
+      catalogoCompleto[cat] = [];
+    }
+
+    catalogoPersonal[cat].forEach(function(prod){
+
+      if(
+        !catalogoCompleto[cat]
+          .includes(prod)
+      ){
+        catalogoCompleto[cat]
+          .push(prod);
+      }
+
+    });
+
+  });
+
+  return catalogoCompleto;
+
 }
 
-function obtenerComprasOrdenadas(){
-  const filtroLista = normalizarTexto(buscarLista.value);
+function esProductoPersonal(categoria, producto) {
+
+  if (!catalogoPersonal[categoria]) {
+    return false;
+  }
+
+  return catalogoPersonal[categoria].includes(producto);
+
+}
+
+function obtenerComprasOrdenadas() {
+
+  const filtroLista = normalizarTexto(
+    buscarLista.value
+  );
 
   return compras
-    .map(function(item, indexOriginal){
-      return { ...item, indexOriginal };
-    })
-    .filter(function(item){
-      if(!filtroLista) return true;
+    .map(function(item, indexOriginal) {
 
-      return normalizarTexto(item.p).includes(filtroLista) ||
-             normalizarTexto(item.c).includes(filtroLista);
+      return {
+        ...item,
+        indexOriginal
+      };
+
     })
-    .sort(function(a,b){
-      if(a.s !== b.s){
+    .filter(function(item) {
+
+      if (!filtroLista) return true;
+
+      return (
+        normalizarTexto(item.p).includes(filtroLista) ||
+        normalizarTexto(item.c).includes(filtroLista)
+      );
+
+    })
+    .sort(function(a, b) {
+
+      if (a.s !== b.s) {
         return a.s ? 1 : -1;
       }
 
-      const cat = a.c.localeCompare(b.c, "es", { sensitivity:"base" });
-      if(cat !== 0) return cat;
+      const cat = a.c.localeCompare(
+        b.c,
+        "es",
+        { sensitivity: "base" }
+      );
 
-      return a.p.localeCompare(b.p, "es", { sensitivity:"base" });
+      if (cat !== 0) return cat;
+
+      return a.p.localeCompare(
+        b.p,
+        "es",
+        { sensitivity: "base" }
+      );
+
     });
+
 }
 
-function render(){
+function render() {
+
   lista.innerHTML = "";
 
   let totalCompra = 0;
@@ -1519,156 +1717,390 @@ function render(){
   let surtidos = 0;
   let sinPrecio = 0;
 
-  compras.forEach(function(x){
+  compras.forEach(function(x) {
+
     const ca = Number(x.ca) || 0;
     const pr = Number(x.pr) || 0;
 
     totalCompra += ca * pr;
     totalArticulos += ca;
 
-    if(x.s){
+    if (x.s) {
       surtidos++;
-    }else{
+    } else {
       pendientes++;
     }
 
-    if(pr <= 0){
+    if (pr <= 0) {
       sinPrecio++;
     }
+
   });
 
-  const comprasOrdenadas = obtenerComprasOrdenadas();
+  const comprasOrdenadas =
+    obtenerComprasOrdenadas();
 
-  if(comprasOrdenadas.length === 0){
-    lista.innerHTML = '<div class="empty">No hay productos para mostrar.</div>';
-  }
+  if (comprasOrdenadas.length === 0) {
 
-  comprasOrdenadas.forEach(function(x){
-    const i = x.indexOriginal;
-    const subtotal = (Number(x.ca) || 0) * (Number(x.pr) || 0);
-
-    const card = document.createElement("div");
-    card.className = "item-card";
-    card.dataset.index = i;
-
-    if(x.s) card.classList.add("surtido");
-    if(i === sel) card.classList.add("selected");
-
-    card.onclick = function(){
-      seleccionar(i);
-    };
-
-    card.innerHTML = `
-      <div class="item-top">
-        <div class="item-name">${escapeHTML(x.p)}</div>
-        <div class="item-status ${x.s ? "done" : "pending"}">
-          ${x.s ? "✅ Surtido" : "⬜ Pendiente"}
-        </div>
-      </div>
-
-      <div class="item-category">
-        <span class="badge">${escapeHTML(x.c)}</span>
-      </div>
-
-      <div class="item-grid">
-        <div class="item-data">
-          <div class="label">Cantidad</div>
-          <div class="value">${escapeHTML(x.ca)}</div>
-        </div>
-
-        <div class="item-data">
-          <div class="label">Precio</div>
-          <div class="value ${x.pr > 0 ? "" : "price-pending"}">
-            ${x.pr > 0 ? formatoMoneda(x.pr) : "Pendiente"}
-          </div>
-        </div>
-
-        <div class="item-data total-line">
-          <div class="label">Subtotal</div>
-          <div class="value">${formatoMoneda(subtotal)}</div>
-        </div>
-      </div>
-
-      <label class="item-check" onclick="event.stopPropagation();">
-        <input type="checkbox" ${x.s ? "checked" : ""} onchange="toggle(${i})">
-        Marcar como surtido
-      </label>
-
-      <div class="item-actions no-print">
-        <button class="blue" onclick="event.stopPropagation();abrirModalPrecioIndice(${i})">💲</button>
-        <button class="orange" onclick="event.stopPropagation();abrirModalCantidadIndice(${i})">🔢</button>
-        <button class="green" onclick="event.stopPropagation();duplicarPorIndice(${i})">📋</button>
-        <button class="red" onclick="event.stopPropagation();eliminarPorIndice(${i})">🗑️</button>
+    lista.innerHTML = `
+      <div class="empty">
+        No hay productos para mostrar.
       </div>
     `;
 
+  }
+
+  comprasOrdenadas.forEach(function(x) {
+
+    const i = x.indexOriginal;
+
+    const subtotal =
+      (Number(x.ca) || 0) *
+      (Number(x.pr) || 0);
+
+    const esPersonal =
+      esProductoPersonal(x.c, x.p);
+
+    const card = document.createElement("div");
+
+    card.className = "item-card";
+    card.dataset.index = i;
+
+    if (x.s) {
+      card.classList.add("surtido");
+    }
+
+    if (i === sel) {
+      card.classList.add("selected");
+    }
+
+    card.onclick = function() {
+
+      seleccionar(i);
+
+    };
+
+    card.innerHTML = `
+
+      <div class="item-top">
+
+        <div>
+
+          <div class="item-name">
+            ${esPersonal ? "⭐ " : ""}
+            ${escapeHTML(x.p)}
+          </div>
+
+        </div>
+
+        <div class="item-status ${
+          x.s
+            ? "done"
+            : "pending"
+        }">
+
+          ${
+            x.s
+              ? "✅ Surtido"
+              : "⬜ Pendiente"
+          }
+
+        </div>
+
+      </div>
+
+      <div class="item-category">
+
+<span class="${esPersonal ? 'badge badge-personal' : 'badge'}">
+
+  ${
+    esPersonal
+      ? "⭐ "
+      : ""
+  }
+
+  ${escapeHTML(x.c)}
+
+</span>
+
+
+      </div>
+
+      <div class="item-grid">
+
+        <div class="item-data">
+
+          <div class="label">
+            Cantidad
+          </div>
+
+          <div class="value">
+            ${escapeHTML(x.ca)}
+          </div>
+
+        </div>
+
+        <div class="item-data">
+
+          <div class="label">
+            Precio
+          </div>
+
+          <div class="value ${
+            x.pr > 0
+              ? ""
+              : "price-pending"
+          }">
+
+            ${
+              x.pr > 0
+                ? formatoMoneda(x.pr)
+                : "Pendiente"
+            }
+
+          </div>
+
+        </div>
+
+        <div class="item-data total-line">
+
+          <div class="label">
+            Subtotal
+          </div>
+
+          <div class="value">
+            ${formatoMoneda(subtotal)}
+          </div>
+
+        </div>
+
+      </div>
+
+      <label
+        class="item-check"
+        onclick="event.stopPropagation();"
+      >
+
+        <input
+          type="checkbox"
+          ${
+            x.s
+              ? "checked"
+              : ""
+          }
+          onchange="toggle(${i})"
+        >
+
+        Marcar como surtido
+
+      </label>
+
+      <div class="item-actions no-print">
+
+        <button
+          class="blue"
+          onclick="event.stopPropagation();abrirModalPrecioIndice(${i})"
+        >
+          💲
+        </button>
+
+        <button
+          class="orange"
+          onclick="event.stopPropagation();abrirModalCantidadIndice(${i})"
+        >
+          🔢
+        </button>
+
+        <button
+          class="green"
+          onclick="event.stopPropagation();duplicarPorIndice(${i})"
+        >
+          📋
+        </button>
+
+        <button
+          class="red"
+          onclick="event.stopPropagation();eliminarPorIndice(${i})"
+        >
+          🗑️
+        </button>
+
+      </div>
+
+    `;
+
     lista.appendChild(card);
+
   });
 
-  const totalProductos = compras.length;
-  const avance = totalProductos > 0 ? Math.round((surtidos / totalProductos) * 100) : 0;
+  const totalProductos =
+    compras.length;
 
-  document.getElementById("statArticulos").textContent = totalArticulos;
-  document.getElementById("statPendientes").textContent = pendientes;
-  document.getElementById("statSurtidos").textContent = surtidos;
-  document.getElementById("statSinPrecio").textContent = sinPrecio;
-  document.getElementById("porcentajeAvance").textContent = avance + "%";
-  document.getElementById("barraAvance").style.width = avance + "%";
+  const avance =
+    totalProductos > 0
+      ? Math.round(
+          (surtidos / totalProductos) * 100
+        )
+      : 0;
 
-  total.textContent = formatoMoneda(totalCompra);
-  document.getElementById("bottomProductos").textContent = totalProductos + (totalProductos === 1 ? " producto" : " productos");
+  document.getElementById(
+    "statArticulos"
+  ).textContent = totalArticulos;
 
-  if(haySeleccion()){
-    estadoSeleccion.textContent = "Seleccionado: " + compras[sel].p;
-  }else{
-    estadoSeleccion.textContent = "Sin selección";
+  document.getElementById(
+    "statPendientes"
+  ).textContent = pendientes;
+
+  document.getElementById(
+    "statSurtidos"
+  ).textContent = surtidos;
+
+  document.getElementById(
+    "statSinPrecio"
+  ).textContent = sinPrecio;
+
+  document.getElementById(
+    "porcentajeAvance"
+  ).textContent = avance + "%";
+
+  document.getElementById(
+    "barraAvance"
+  ).style.width = avance + "%";
+
+  total.textContent =
+    formatoMoneda(totalCompra);
+
+  document.getElementById(
+    "bottomProductos"
+  ).textContent =
+    totalProductos +
+    (
+      totalProductos === 1
+        ? " producto"
+        : " productos"
+    );
+
+  if (haySeleccion()) {
+
+    estadoSeleccion.textContent =
+      "Seleccionado: " +
+      compras[sel].p;
+
+  } else {
+
+    estadoSeleccion.textContent =
+      "Sin selección";
+
   }
 
   guardarTodo();
+
 }
 
-function crearTextoLista(){
-  const fecha = new Date().toLocaleString("es-MX");
-  let texto = "🛒 Supermercado PRO MAX\n";
-  texto += "Fecha: " + fecha + "\n\n";
+function crearTextoLista() {
+
+  const fecha =
+    new Date().toLocaleString(
+      "es-MX"
+    );
+
+  let texto =
+    "🛒 Supermercado PRO MAX\n";
+
+  texto +=
+    "Fecha: " +
+    fecha +
+    "\n\n";
 
   const ordenadas = compras
-    .map(function(item){
-      return { ...item };
+    .map(function(item) {
+
+      return {
+        ...item
+      };
+
     })
-    .sort(function(a,b){
-      if(a.s !== b.s){
+    .sort(function(a, b) {
+
+      if (a.s !== b.s) {
         return a.s ? 1 : -1;
       }
 
-      const cat = a.c.localeCompare(b.c, "es", { sensitivity:"base" });
-      if(cat !== 0) return cat;
+      const cat = a.c.localeCompare(
+        b.c,
+        "es",
+        { sensitivity: "base" }
+      );
 
-      return a.p.localeCompare(b.p, "es", { sensitivity:"base" });
+      if (cat !== 0) return cat;
+
+      return a.p.localeCompare(
+        b.p,
+        "es",
+        { sensitivity: "base" }
+      );
+
     });
 
   let totalCompra = 0;
 
-  ordenadas.forEach(function(x){
-    const subtotal = (Number(x.ca) || 0) * (Number(x.pr) || 0);
+  ordenadas.forEach(function(x) {
+
+    const subtotal =
+      (Number(x.ca) || 0) *
+      (Number(x.pr) || 0);
+
     totalCompra += subtotal;
 
-    texto += (x.s ? "✅ " : "⬜ ");
-    texto += x.ca + " x " + x.p;
-    texto += " | " + x.c;
+    texto +=
+      (x.s ? "✅ " : "⬜ ");
 
-    if(x.pr > 0){
-      texto += " | " + formatoMoneda(x.pr);
-      texto += " | Subtotal: " + formatoMoneda(subtotal);
-    }else{
-      texto += " | Precio pendiente";
+    texto +=
+      x.ca +
+      " x " +
+      x.p;
+
+    if (
+      esProductoPersonal(
+        x.c,
+        x.p
+      )
+    ) {
+      texto +=
+        " ⭐ PERSONAL";
+    }
+
+    texto +=
+      " | " +
+      x.c;
+
+    if (x.pr > 0) {
+
+      texto +=
+        " | " +
+        formatoMoneda(x.pr);
+
+      texto +=
+        " | Subtotal: " +
+        formatoMoneda(subtotal);
+
+    } else {
+
+      texto +=
+        " | Precio pendiente";
+
     }
 
     texto += "\n";
+
   });
 
-  texto += "\nTotal estimado: " + formatoMoneda(totalCompra);
+  texto +=
+    "\nTotal estimado: " +
+    formatoMoneda(totalCompra);
+
   return texto;
+
 }
 
 async function copiarLista(){
@@ -1703,14 +2135,15 @@ function imprimirLista(){
 }
 
 function exportarBackup(){
-  const respaldo = {
+const respaldo = {
     app:"Supermercado PRO MAX",
-    version:"3.0",
+    version:"4.0",
     fecha:new Date().toISOString(),
     compras:compras,
     preciosGuardados:preciosGuardados,
+    catalogoPersonal:catalogoPersonal,
     config:config
-  };
+};
 
   const blob = new Blob(
     [JSON.stringify(respaldo, null, 2)],
@@ -1744,14 +2177,17 @@ function importarBackup(event){
     try{
       const data = JSON.parse(e.target.result);
 
-      let nuevasCompras = [];
-      let nuevosPrecios = {};
+let nuevasCompras = [];
+let nuevosPrecios = {};
+let nuevoCatalogoPersonal = {};
 
       if(Array.isArray(data)){
         nuevasCompras = data;
       }else{
         nuevasCompras = Array.isArray(data.compras) ? data.compras : [];
         nuevosPrecios = data.preciosGuardados || {};
+        nuevoCatalogoPersonal =
+       data.catalogoPersonal || {};
       }
 
       if(!Array.isArray(nuevasCompras)){
@@ -1775,10 +2211,15 @@ function importarBackup(event){
         };
       });
 
-      preciosGuardados = {
-        ...preciosGuardados,
-        ...nuevosPrecios
-      };
+preciosGuardados = {
+  ...preciosGuardados,
+  ...nuevosPrecios
+};
+
+catalogoPersonal = {
+  ...catalogoPersonal,
+  ...nuevoCatalogoPersonal
+};
 
       sel = null;
       render();
@@ -1792,6 +2233,24 @@ function importarBackup(event){
 
   lector.readAsText(archivo);
 }
+
+function toggleDarkMode(){
+
+  document.body.classList.toggle("dark");
+
+  config.dark =
+    document.body.classList.contains("dark");
+
+  guardarTodo();
+
+  mostrarMensaje(
+    config.dark
+      ? "Modo oscuro activado."
+      : "Modo oscuro desactivado."
+  );
+
+}
+
 
 function registrarManifestBasico(){
   try{
