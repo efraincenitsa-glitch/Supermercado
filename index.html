@@ -1,83 +1,922 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-MX">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2e7d32">
 <title>Supermercado PRO MAX</title>
 
 <link rel="apple-touch-icon" sizes="1024x1024" href="icon-1024.png">
 <link rel="icon" type="image/png" sizes="1024x1024" href="icon-1024.png">
+
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Supermercado">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <style>
-  body{font-family:Arial;margin:0;background:#f4f6f8}
-  header{background:#2e7d32;color:#fff;padding:14px;text-align:center;font-size:20px}
-  .container{padding:15px}
-  select,input,button{width:100%;padding:12px;margin:6px 0;font-size:16px}
-  button{border:none;border-radius:6px;cursor:pointer}
-  .green{background:#2e7d32;color:#fff}
-  .red{background:#c62828;color:#fff}
-  .orange{background:#ef6c00;color:#fff}
-  table{width:100%;border-collapse:collapse;margin-top:15px}
-  th,td{border:1px solid #ccc;padding:8px;text-align:center}
-  tr.surtido{background:#c8e6c9;text-decoration:line-through}
-  hr{margin:15px 0}
-  .oculto{display:none}
-  tr.selected{background-color:#ffe082 !important}
+  :root{
+    --bg:#f4f6f8;
+    --card:#ffffff;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --primary:#2e7d32;
+    --primary-dark:#1b5e20;
+    --danger:#c62828;
+    --danger-dark:#8e0000;
+    --warning:#ef6c00;
+    --warning-dark:#bf5200;
+    --blue:#1565c0;
+    --blue-dark:#0d47a1;
+    --border:#d1d5db;
+    --soft:#eef2f7;
+    --selected:#ffe082;
+    --surtido:#c8e6c9;
+    --expensive:#ffebee;
+    --shadow:0 8px 24px rgba(15,23,42,.10);
+    --radius:16px;
+  }
+
+  *{
+    box-sizing:border-box;
+  }
+
+  body{
+    font-family:Arial, Helvetica, sans-serif;
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  body.dark{
+    --bg:#111827;
+    --card:#1f2937;
+    --text:#f9fafb;
+    --muted:#d1d5db;
+    --border:#374151;
+    --soft:#273449;
+    --selected:#7c5a00;
+    --surtido:#1b5e20;
+    --expensive:#5b1f1f;
+    --shadow:0 8px 24px rgba(0,0,0,.35);
+  }
+
+  header{
+    position:sticky;
+    top:0;
+    z-index:50;
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:#fff;
+    padding:16px 14px;
+    text-align:center;
+    box-shadow:0 4px 14px rgba(0,0,0,.18);
+  }
+
+  header .title{
+    font-size:21px;
+    font-weight:800;
+    letter-spacing:.2px;
+  }
+
+  header .subtitle{
+    font-size:12px;
+    opacity:.9;
+    margin-top:3px;
+  }
+
+  .container{
+    width:100%;
+    max-width:1100px;
+    margin:0 auto;
+    padding:14px;
+    padding-bottom:90px;
+  }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:14px;
+    margin-bottom:14px;
+    box-shadow:var(--shadow);
+  }
+
+  .section-title{
+    margin:0 0 10px;
+    font-size:16px;
+    font-weight:800;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+  }
+
+  .section-title span{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:600;
+  }
+
+  label{
+    display:block;
+    font-size:13px;
+    font-weight:700;
+    margin:8px 0 4px;
+    color:var(--muted);
+  }
+
+  select,
+  input,
+  button,
+  textarea{
+    width:100%;
+    padding:12px;
+    margin:5px 0;
+    font-size:16px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    background:var(--card);
+    color:var(--text);
+    outline:none;
+  }
+
+  select:focus,
+  input:focus,
+  textarea:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(46,125,50,.18);
+  }
+
+  button{
+    border:none;
+    cursor:pointer;
+    font-weight:800;
+    color:#fff;
+    transition:transform .08s ease, opacity .15s ease, filter .15s ease;
+    user-select:none;
+  }
+
+  button:active{
+    transform:scale(.985);
+  }
+
+  button:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+  }
+
+  .green{background:var(--primary);}
+  .green:hover{filter:brightness(.96);}
+
+  .red{background:var(--danger);}
+  .red:hover{filter:brightness(.96);}
+
+  .orange{background:var(--warning);}
+  .orange:hover{filter:brightness(.96);}
+
+  .blue{background:var(--blue);}
+  .blue:hover{filter:brightness(.96);}
+
+  .gray{
+    background:#4b5563;
+  }
+
+  .row{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+
+  .row-2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+
+  .row-3{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:8px;
+  }
+
+  .buttons-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+    margin-top:8px;
+  }
+
+  .stats{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  .stat{
+    background:var(--soft);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:12px;
+    text-align:center;
+  }
+
+  .stat .num{
+    font-size:20px;
+    font-weight:900;
+  }
+
+  .stat .txt{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:3px;
+    font-weight:700;
+  }
+
+  .total-box{
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:white;
+    border-radius:var(--radius);
+    padding:16px;
+    text-align:center;
+    box-shadow:var(--shadow);
+  }
+
+  .total-box .total-label{
+    font-size:13px;
+    opacity:.9;
+  }
+
+  .total-box .total-amount{
+    font-size:30px;
+    font-weight:900;
+    margin-top:4px;
+  }
+
+  .table-wrap{
+    width:100%;
+    overflow:auto;
+    border-radius:14px;
+    border:1px solid var(--border);
+  }
+
+  table{
+    width:100%;
+    min-width:760px;
+    border-collapse:collapse;
+    background:var(--card);
+  }
+
+  th,
+  td{
+    border-bottom:1px solid var(--border);
+    padding:10px 8px;
+    text-align:center;
+    font-size:14px;
+  }
+
+  th{
+    position:sticky;
+    top:0;
+    z-index:5;
+    background:var(--soft);
+    color:var(--text);
+    font-size:13px;
+  }
+
+  tr{
+    transition:background .12s ease;
+  }
+
+  tr:hover{
+    background:rgba(46,125,50,.08);
+  }
+
+  tr.surtido{
+    background:var(--surtido);
+    text-decoration:line-through;
+    opacity:.78;
+  }
+
+  tr.selected{
+    background-color:var(--selected) !important;
+    outline:3px solid rgba(239,108,0,.35);
+  }
+
+  tr.expensive:not(.surtido):not(.selected){
+    background:var(--expensive);
+  }
+
+  .producto-cell{
+    text-align:left;
+    font-weight:700;
+  }
+
+  .cat-badge{
+    display:inline-block;
+    padding:4px 8px;
+    border-radius:999px;
+    background:var(--soft);
+    border:1px solid var(--border);
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .price-pending{
+    color:var(--warning);
+    font-weight:900;
+  }
+
+  .actions-mini{
+    display:flex;
+    gap:5px;
+    justify-content:center;
+  }
+
+  .mini-btn{
+    width:auto;
+    padding:7px 9px;
+    margin:0;
+    border-radius:10px;
+    font-size:12px;
+  }
+
+  .empty{
+    padding:22px;
+    text-align:center;
+    color:var(--muted);
+    font-weight:700;
+  }
+
+  .hint{
+    background:var(--soft);
+    border:1px dashed var(--border);
+    color:var(--muted);
+    padding:10px;
+    border-radius:12px;
+    font-size:13px;
+    line-height:1.4;
+  }
+
+  .status{
+    margin-top:8px;
+    padding:10px;
+    border-radius:12px;
+    font-size:13px;
+    font-weight:800;
+    display:none;
+  }
+
+  .status.ok{
+    display:block;
+    color:#14532d;
+    background:#dcfce7;
+    border:1px solid #86efac;
+  }
+
+  .status.error{
+    display:block;
+    color:#7f1d1d;
+    background:#fee2e2;
+    border:1px solid #fecaca;
+  }
+
+  body.dark .status.ok{
+    color:#dcfce7;
+    background:#14532d;
+    border-color:#166534;
+  }
+
+  body.dark .status.error{
+    color:#fee2e2;
+    background:#7f1d1d;
+    border-color:#991b1b;
+  }
+
+  .file-input{
+    background:var(--soft);
+  }
+
+  .bottom-bar{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:60;
+    background:rgba(255,255,255,.88);
+    backdrop-filter:blur(12px);
+    border-top:1px solid var(--border);
+    padding:8px 12px;
+  }
+
+  body.dark .bottom-bar{
+    background:rgba(17,24,39,.88);
+  }
+
+  .bottom-inner{
+    max-width:1100px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:8px;
+  }
+
+  .bottom-inner button{
+    padding:10px 8px;
+    font-size:13px;
+    border-radius:14px;
+  }
+
+  .modal-backdrop{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:18px;
+  }
+
+  .modal-backdrop.show{
+    display:flex;
+  }
+
+  .modal{
+    width:100%;
+    max-width:420px;
+    background:var(--card);
+    color:var(--text);
+    border-radius:20px;
+    padding:18px;
+    box-shadow:0 24px 80px rgba(0,0,0,.35);
+    border:1px solid var(--border);
+  }
+
+  .modal h3{
+    margin:0 0 8px;
+    font-size:18px;
+  }
+
+  .modal p{
+    margin:0 0 12px;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.4;
+  }
+
+  .modal-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:10px;
+  }
+
+  .hidden{
+    display:none !important;
+  }
+
+  .print-header{
+    display:none;
+  }
+
+  @media(min-width:720px){
+    .row{
+      grid-template-columns:1fr 1fr 140px;
+      align-items:end;
+    }
+
+    .buttons-grid{
+      grid-template-columns:repeat(4,1fr);
+    }
+
+    .stats{
+      grid-template-columns:repeat(4,1fr);
+    }
+  }
+
+  @media print{
+    body{
+      background:#fff;
+      color:#000;
+    }
+
+    header,
+    .card.form-card,
+    .card.tools-card,
+    .bottom-bar,
+    .actions-mini,
+    .no-print{
+      display:none !important;
+    }
+
+    .container{
+      max-width:none;
+      padding:0;
+    }
+
+    .card{
+      box-shadow:none;
+      border:none;
+      padding:0;
+    }
+
+    .print-header{
+      display:block;
+      text-align:center;
+      margin-bottom:16px;
+    }
+
+    table{
+      min-width:0;
+      font-size:11px;
+    }
+
+    th,
+    td{
+      font-size:11px;
+      padding:6px;
+      color:#000;
+      border:1px solid #999;
+    }
+
+    .total-box{
+      box-shadow:none;
+      color:#000;
+      background:#fff;
+      border:2px solid #000;
+      margin-top:12px;
+    }
+  }
 </style>
 </head>
+
 <body>
 
-<header>🛒 Supermercado PRO MAX</header>
+<header>
+  <div class="title">🛒 Supermercado PRO MAX</div>
+  <div class="subtitle">Lista offline con precios, respaldo y control de surtido</div>
+</header>
 
 <div class="container">
-  <select id="categoria"></select>
-  <input type="text" id="buscador" placeholder="Buscar producto por nombre">
-  <select id="producto"></select>
-  <input type="number" id="cantidad" value="1" min="1">
 
+  <div class="print-header">
+    <h2>🛒 Supermercado PRO MAX</h2>
+    <p id="fechaImpresion"></p>
+  </div>
 
-<button class="green" onclick="agregar()">Agregar</button>
-<button class="green" onclick="capturarPrecio()">Capturar precio al seleccionado</button>
-<button class="orange" onclick="editarCantidad()">Editar cantidad del seleccionado</button>
-<button class="red" onclick="eliminar()">Eliminar seleccionado</button>
-<button class="orange" onclick="limpiar()">Limpiar lista</button>
+  <div class="card form-card">
+    <h2 class="section-title">
+      Agregar producto
+      <span>Funciona sin Internet</span>
+    </h2>
 
+    <div class="row">
+      <div>
+        <label for="categoria">Categoría</label>
+        <select id="categoria"></select>
+      </div>
 
+      <div>
+        <label for="buscador">Buscar producto del catálogo</label>
+        <input type="text" id="buscador" placeholder="Ejemplo: arroz, leche, jabón">
+      </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Cat.</th>
-        <th>Producto</th>
-        <th>Cant.</th>
-        <th>Precio</th>
-        <th>Subtotal</th>
-        <th>✔</th>
-      </tr>
-    </thead>
-    <tbody id="lista"></tbody>
-  </table>
+      <div>
+        <label for="cantidad">Cantidad</label>
+        <input type="number" id="cantidad" value="1" min="1" step="1">
+      </div>
+    </div>
 
-  <h3 id="total">Total: $0</h3>
+    <label for="producto">Producto</label>
+    <select id="producto"></select>
+
+    <div class="buttons-grid">
+      <button class="green" onclick="agregar()">➕ Agregar</button>
+      <button class="blue" onclick="abrirModalProductoManual()">✍️ Producto manual</button>
+      <button class="orange" onclick="duplicarSeleccionado()">📋 Duplicar seleccionado</button>
+      <button class="gray" onclick="toggleDarkMode()">🌙 Modo oscuro</button>
+    </div>
+
+    <div id="mensaje" class="status"></div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">
+      Resumen
+      <span id="estadoSeleccion">Sin producto seleccionado</span>
+    </h2>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="num" id="statArticulos">0</div>
+        <div class="txt">Artículos</div>
+      </div>
+
+      <div class="stat">
+        <div class="num" id="statPendientes">0</div>
+        <div class="txt">Pendientes</div>
+      </div>
+
+      <div class="stat">
+        <div class="num" id="statSurtidos">0</div>
+        <div class="txt">Surtidos</div>
+      </div>
+
+      <div class="stat">
+        <div class="num" id="statSinPrecio">0</div>
+        <div class="txt">Sin precio</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card tools-card">
+    <h2 class="section-title">
+      Herramientas
+      <span>Respaldo local</span>
+    </h2>
+
+    <div class="row-2">
+      <button class="green" onclick="abrirModalPrecio()">💲 Capturar precio</button>
+      <button class="orange" onclick="abrirModalCantidad()">🔢 Editar cantidad</button>
+    </div>
+
+    <div class="row-2">
+      <button class="blue" onclick="copiarLista()">📋 Copiar lista</button>
+      <button class="blue" onclick="imprimirLista()">🖨️ Imprimir / PDF</button>
+    </div>
+
+    <div class="row-2">
+      <button class="green" onclick="exportarBackup()">💾 Exportar respaldo</button>
+      <button class="orange" onclick="document.getElementById('archivoImportar').click()">📂 Importar respaldo</button>
+    </div>
+
+    <input class="file-input hidden" type="file" id="archivoImportar" accept=".json,application/json" onchange="importarBackup(event)">
+
+    <div class="row-2">
+      <button class="red" onclick="eliminar()">🗑️ Eliminar seleccionado</button>
+      <button class="red" onclick="limpiar()">🧹 Limpiar lista</button>
+    </div>
+
+    <div class="hint">
+      Tip: selecciona un producto de la tabla tocando su fila. Después puedes capturar precio,
+      editar cantidad, duplicar o eliminar.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">
+      Lista de compras
+      <span>Pendientes arriba</span>
+    </h2>
+
+    <label for="buscarLista">Buscar dentro de la lista agregada</label>
+    <input type="text" id="buscarLista" placeholder="Filtrar lista actual" oninput="render()">
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Cat.</th>
+            <th>Producto</th>
+            <th>Cant.</th>
+            <th>Precio</th>
+            <th>Subtotal</th>
+            <th>✔</th>
+            <th class="no-print">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="lista"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="total-box">
+    <div class="total-label">Total estimado</div>
+    <div class="total-amount" id="total">$0.00</div>
+  </div>
+
+</div>
+
+<div class="bottom-bar">
+  <div class="bottom-inner">
+    <button class="green" onclick="agregar()">➕ Agregar</button>
+    <button class="blue" onclick="abrirModalPrecio()">💲 Precio</button>
+    <button class="orange" onclick="copiarLista()">📋 Copiar</button>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalPrecio">
+  <div class="modal">
+    <h3>💲 Capturar precio</h3>
+    <p id="modalPrecioTexto">Selecciona un producto de la lista para capturar su precio.</p>
+
+    <label for="inputPrecio">Precio unitario</label>
+    <input type="number" id="inputPrecio" min="0" step="0.01" placeholder="0.00">
+
+    <div class="modal-actions">
+      <button class="gray" onclick="cerrarModal('modalPrecio')">Cancelar</button>
+      <button class="green" onclick="guardarPrecio()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalCantidad">
+  <div class="modal">
+    <h3>🔢 Editar cantidad</h3>
+    <p id="modalCantidadTexto">Selecciona un producto de la lista para editar su cantidad.</p>
+
+    <label for="inputCantidadEditar">Nueva cantidad</label>
+    <input type="number" id="inputCantidadEditar" min="1" step="1" placeholder="1">
+
+    <div class="modal-actions">
+      <button class="gray" onclick="cerrarModal('modalCantidad')">Cancelar</button>
+      <button class="orange" onclick="guardarCantidad()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalProductoManual">
+  <div class="modal">
+    <h3>✍️ Producto manual</h3>
+    <p>Agrega un producto que no esté en el catálogo.</p>
+
+    <label for="manualCategoria">Categoría</label>
+    <input type="text" id="manualCategoria" placeholder="Ejemplo: Farmacia">
+
+    <label for="manualProducto">Producto</label>
+    <input type="text" id="manualProducto" placeholder="Ejemplo: Curitas">
+
+    <label for="manualCantidad">Cantidad</label>
+    <input type="number" id="manualCantidad" min="1" step="1" value="1">
+
+    <label for="manualPrecio">Precio opcional</label>
+    <input type="number" id="manualPrecio" min="0" step="0.01" placeholder="0.00">
+
+    <div class="modal-actions">
+      <button class="gray" onclick="cerrarModal('modalProductoManual')">Cancelar</button>
+      <button class="green" onclick="agregarProductoManual()">Agregar</button>
+    </div>
+  </div>
 </div>
 
 <script>
 const catalogo = {
-"Abarrotes":["Arroz", "Frijol", "Lentejas", "Garbanzos", "Papel Aluminio", "Azucar", "Chiles Jalapeños", "Chile Chipotle", "Chiles en Rajas", "Chicharos", "Tostadas", "Tortillas de Arina", "Tortillas de Maiz", "Atole", "Sal", "Aderezos", "Harina de trigo", "Harina de maiz", "Aceite vegetal", "Aceite de oliva", "Vinagre", "Cafe molido", "Cafe soluble", "Te", "Avena", "Cereal de maiz", "Palomitas de Maiz", "Pasta espagueti", "Oregano seco", "Laurel", "Hierbabuena seca", "Pasta codito", "Ajo en polvo", "Cebolla en polvo", "Salsa de tomate", "Pure de tomate", "Salsa picante embotellada", "Salsa de soya", "Salsa inglesa", "Pure de papa instantaneo", "Mayonesa", "Mostaza", "Ketchup", "Chiles enlatados", "Atun en lata", "Sardinas en lata", "Sopa instantanea", "Caldo en cubos", "Galletas saladas", "Galletas dulces", "Pan de caja", "Pan Tostado", "Pan Hotdog","Pan molido", "Mermelada", "Miel", "Chocolate en polvo", "Gelatina", "Levadura", "Especias mixtas", "Consome", "Almidon de maiz", "Manjar", "Leche evaporada", "Leche condensada", "Crema para cafe", "Cocoa en polvo", "Pan molido japones panko", "Chiles guajillo secos", "Chiles de arbol secos", "Chiles ancho secos", "Chiles pasilla secos", "Vinagre balsamico", "Aceite de ajonjolí", "Aceite de coco", "Ajonjolí", "Linaza", "Chía", "Quinoa", "Trigo inflado", "Cous cous", "Agar agar", "Salsa teriyaki", "Salsa hoisin", "Salsa de ostion", "Mole en pasta", "Mole en polvo", "Leche de coco", "Leche de almendra", "Leche de avena", "Crema de cacahuate", "Crema de avellanas", "Catsup picante", "Mostaza Dijon", "Mostaza con miel", "Mermelada de fresa", "Mermelada de durazno", "Aji molido", "Paprika ahumada", "Pimienta negra molida", "Pimienta gorda", "Curry en polvo", "Curcuma molida", "Comino entero", "Semilla de cilantro", "Semillas de mostaza", "Nuez moscada entera", "Canela en rama", "Chocolates de mesa", "Sopa de pasta en sobre", "Harina para hotcakes"],
-"Hierbas y especias":["Albahaca", "Oregano", "Tomillo", "Romero", "Cilantro", "Perejil", "Eneldo", "Menta", "Hierbabuena", "Salvia", "Laurel", "Ajo", "Curcuma", "Jengibre", "Canela", "Clavo", "Comino", "Pimenton", "Nuez moscada", "Cardamomo", "Paprika", "Anís estrella", "Mostaza", "Cebollin", "Estragon", "Hinojo", "Lemongrass", "Cilantro seco", "Mejorana", "Curry", "Pimienta negra", "Pimienta blanca", "Pimienta rosa", "Semilla de fenogreco", "Azafran", "Vainilla", "Galanga", "Achiote", "Epazote", "Avellana dulce"],
-  "Carnes":["Carne molida de res", "Bistec de res", "Chuleta de res", "Costilla de res", "Arrachera", "Diezmillo", "Pechuga de pollo", "Pierna de pollo", "Muslo de pollo", "Pollo entero", "Filete de pescado", "Pescado entero", "Carne molida de cerdo", "Chuleta de cerdo", "Lomo de cerdo", "Costilla de cerdo", "Tocino", "Jamon", "Salchichas", "Chorizo", "Longaniza", "Salami", "Mortadela", "Salchichon", "Carne para hamburguesa", "Nuggets de pollo", "Alitas de pollo", "Carne para milanesa", "Carne seca", "Carne marinada", "Filete de tilapia", "Filete de salmon", "Filete de atun", "Mojarra entera", "Carpa", "Bagre entero", "Lubina", "Bacalao", "Lenguado", "Robalo entero", "Trucha", "Huachinango entero", "Sierra en rodajas", "Camaron crudo", "Marlin", "Camaron cocido", "Pulpo", "Calamar", "Jaiba", "Surimi", "Pescado empanizado"],
- "Lácteos":["Leche de cabra", "Leche de oveja", "Leche fortificada con calcio", "Leche sabor chocolate", "Leche sabor fresa", "Leche sabor vainilla", "Bebida lactea fermentada", "Bebida lactea saborizada", "Queso panela", "Queso oaxaca", "Queso asadero", "Queso chihuahua", "Queso provolone", "Queso emmental", "Queso brie", "Queso camembert", "Queso feta", "Queso cottage", "Queso mascarpone", "Queso bufala mozzarella", "Queso idiazabal", "Queso edam", "Queso colby", "Queso monterrey jack", "Queso romano", "Queso pecorino", "Queso gruyere", "Queso suizo", "Queso port salut", "Queso panela light", "Queso crema light", "Crema para batir", "Crema para cafe liquida", "Yogur sabor fresa", "Yogur sabor durazno", "Yogur con frutas", "Yogur deslactosado", "Yogur sin azucar", "Postre lacteo sabor chocolate", "Postre lacteo sabor vainilla", "Gelatina con leche", "Pudin de chocolate", "Pudun de vainilla", "Helado de yogur", "Mantequilla sin sal", "Mantequilla clarificada ghee", "Queso para untar", "Nieve de leche", "Malteada lactea", "Leche entera", "Leche semidescremada", "Leche descremada", "Leche deslactosada", "Leche evaporada", "Leche condensada", "Leche en polvo", "Huevo", "Yogur natural", "Yogur griego", "Yogur bebible", "Queso fresco", "Queso crema", "Queso mozzarella", "Queso cheddar", "Queso manchego", "Queso parmesano", "Queso gouda", "Queso azul", "Requeson", "Ricotta", "Mantequilla", "Margarina lactea", "Crema de leche", "Crema agria", "Suero de leche", "Helado", "Paletas de crema", "Flan de leche", "Natilla", "Kefir"],
- "Bebidas":["Agua embotellada", "Refrescos", "Jugos", "Cervezas y vinos"],
- "Snacks y Dulces":["Papas fritas", "Galletas", "Chocolates", "Mantecaditos", "Chicles"],
-"Cereales":["Almendra", "Anacardo", "Avellana", "Cacahuate", "Castana de caju", "Castana de Brasil", "Chia", "Coco rallado", "Datil seco", "Higo seco", "Lino", "Nuez", "Nuez de macadamia", "Nuez pecana", "Pasas", "Pistache", "Semilla de calabaza", "Semilla de girasol", "Semilla de sesamo", "Semilla de amapola"],
- "Productos de Higiene Personal":["Jabon de baño", "Champu", "Pasta de dientes", "Desodorante", "Bicarbonato"],
-  "Frutas y Verduras":["Guinear", "Yaca", "Carambolillo", "Pepino ingles", "Col rizada", "Col china", "Nabo japones", "Jengibre fresco", "Taro", "Ñame", "Yuca", "Malanga", "Brotes de soya", "Rabano sandia", "Berza", "Berros", "Mostaza verde", "Pak choi", "Kai lan", "Chayote", "Chayote espinoso", "Tomatillo", "Flor de calabaza", "Verdolaga", "Quelites", "Tamarindo", "Tangelo", "Pomelo", "Mandarino verde", "Uchuva", "Tamarillo", "Pepino persa", "Pepino limon", "Ciruelo rojo", "Mango petacon", "Mango ataulfo", "Mango manila", "Peron", "Peron golden", "Pera asiatica", "Manzana gala", "Manzana pink lady", "Manzana honeycrisp", "Melocoton", "Durazno criollo", "Fruta del dragon amarilla", "Naranja sanguina", "Moras azules", "Banana dominico-harton", "Zapallo", "Pepino armenio", "Acelga", "Aguacate", "Ajo", "Mora","Alcachofa", "Apio", "Arandano", "Berenjena", "Betabel", "Jitomate", "Brocoli", "Calabacita", "Calabaza", "Camote", "Carambola", "Cebolla", "Cebollin", "Cereza", "Champiñon", "Chile", "Chicharo", "Chirimoya", "Ciruela", "Coco", "Col", "Col morada", "Coliflor", "Durazno", "Elote", "Endivia", "Escarola", "Esparrago", "Espinaca", "Fresa", "Frambuesa", "Garbanzo tierno", "Granada", "Grosella", "Guayaba", "Haba", "Higo", "Jicama", "Kiwi", "Lechuga", "Lenteja verde", "Limon", "Litchi", "Mandarina", "Mamey", "Manzana", "Manzana verde", "Maracuya", "Melon", "Mango", "Nabo", "Naranja", "Nispero", "Papa", "Papaya", "Pera", "Pera roja", "Pepino", "Pimiento", "Piña", "Pitahaya", "Platano", "Platano macho", "Platano dominico", "Rabano", "Repollo", "Rucula", "Sandia", "Seta", "Tomate", "Toronja", "Tuna", "Uva", "Uva verde", "Zapote", "Zanahoria", "Zarzamora"],
- "Limpieza":["Detergente en polvo", "Detergente liquido", "Suavizante de telas", "Jabon en barra para lavar", "Jabon liquido para manos", "Cloro", "Blanqueador", "Desinfectante liquido", "Desinfectante en aerosol", "Limpiador multiusos", "Limpiador de pisos", "Limpiador de baños", "Limpiador de cocina", "Limpiador de vidrios", "Limpiador de hornos", "Limpiador de Lavadoras", "Limpiador de acero inoxidable", "Quitamanchas", "Desengrasante", "Alcohol", "Amoniaco", "Limpiador aromatizante", "Pastillas para WC", "Gel limpiador para WC", "Escoba", "Trapeador", "Cubeta", "Fibra para tallar", "Esponjas", "Trapos de limpieza", "Toallas desechables", "Servilletas", "Papel higienico", "Papel de cocina", "Bolsas para basura", "Insecticida", "Repelente de insectos", "Aromatizante ambiental", "Limpiador antibacterial", "Guantes de limpieza", "Cepillo para baño"]
+  "Abarrotes":[
+    "Arroz", "Frijol", "Lentejas", "Garbanzos", "Papel Aluminio", "Azucar",
+    "Chiles Jalapeños", "Chile Chipotle", "Chiles en Rajas", "Chicharos",
+    "Tostadas", "Tortillas de Arina", "Tortillas de Maiz", "Atole", "Sal",
+    "Aderezos", "Harina de trigo", "Harina de maiz", "Aceite vegetal",
+    "Aceite de oliva", "Vinagre", "Cafe molido", "Cafe soluble", "Te", "Avena",
+    "Cereal de maiz", "Palomitas de Maiz", "Pasta espagueti", "Oregano seco",
+    "Laurel", "Hierbabuena seca", "Pasta codito", "Ajo en polvo",
+    "Cebolla en polvo", "Salsa de tomate", "Pure de tomate",
+    "Salsa picante embotellada", "Salsa de soya", "Salsa inglesa",
+    "Pure de papa instantaneo", "Mayonesa", "Mostaza", "Ketchup",
+    "Chiles enlatados", "Atun en lata", "Sardinas en lata", "Sopa instantanea",
+    "Caldo en cubos", "Galletas saladas", "Galletas dulces", "Pan de caja",
+    "Pan Tostado", "Pan Hotdog", "Pan molido", "Mermelada", "Miel",
+    "Chocolate en polvo", "Gelatina", "Levadura", "Especias mixtas", "Consome",
+    "Almidon de maiz", "Manjar", "Leche evaporada", "Leche condensada",
+    "Crema para cafe", "Cocoa en polvo", "Pan molido japones panko",
+    "Chiles guajillo secos", "Chiles de arbol secos", "Chiles ancho secos",
+    "Chiles pasilla secos", "Vinagre balsamico", "Aceite de ajonjolí",
+    "Aceite de coco", "Ajonjolí", "Linaza", "Chía", "Quinoa", "Trigo inflado",
+    "Cous cous", "Agar agar", "Salsa teriyaki", "Salsa hoisin",
+    "Salsa de ostion", "Mole en pasta", "Mole en polvo", "Leche de coco",
+    "Leche de almendra", "Leche de avena", "Crema de cacahuate",
+    "Crema de avellanas", "Catsup picante", "Mostaza Dijon", "Mostaza con miel",
+    "Mermelada de fresa", "Mermelada de durazno", "Aji molido",
+    "Paprika ahumada", "Pimienta negra molida", "Pimienta gorda",
+    "Curry en polvo", "Curcuma molida", "Comino entero", "Semilla de cilantro",
+    "Semillas de mostaza", "Nuez moscada entera", "Canela en rama",
+    "Chocolates de mesa", "Sopa de pasta en sobre", "Harina para hotcakes"
+  ],
+
+  "Hierbas y especias":[
+    "Albahaca", "Oregano", "Tomillo", "Romero", "Cilantro", "Perejil",
+    "Eneldo", "Menta", "Hierbabuena", "Salvia", "Laurel", "Ajo", "Curcuma",
+    "Jengibre", "Canela", "Clavo", "Comino", "Pimenton", "Nuez moscada",
+    "Cardamomo", "Paprika", "Anís estrella", "Mostaza", "Cebollin",
+    "Estragon", "Hinojo", "Lemongrass", "Cilantro seco", "Mejorana", "Curry",
+    "Pimienta negra", "Pimienta blanca", "Pimienta rosa",
+    "Semilla de fenogreco", "Azafran", "Vainilla", "Galanga", "Achiote",
+    "Epazote", "Avellana dulce"
+  ],
+
+  "Carnes":[
+    "Carne molida de res", "Bistec de res", "Chuleta de res",
+    "Costilla de res", "Arrachera", "Diezmillo", "Pechuga de pollo",
+    "Pierna de pollo", "Muslo de pollo", "Pollo entero", "Filete de pescado",
+    "Pescado entero", "Carne molida de cerdo", "Chuleta de cerdo",
+    "Lomo de cerdo", "Costilla de cerdo", "Tocino", "Jamon", "Salchichas",
+    "Chorizo", "Longaniza", "Salami", "Mortadela", "Salchichon",
+    "Carne para hamburguesa", "Nuggets de pollo", "Alitas de pollo",
+    "Carne para milanesa", "Carne seca", "Carne marinada", "Filete de tilapia",
+    "Filete de salmon", "Filete de atun", "Mojarra entera", "Carpa",
+    "Bagre entero", "Lubina", "Bacalao", "Lenguado", "Robalo entero", "Trucha",
+    "Huachinango entero", "Sierra en rodajas", "Camaron crudo", "Marlin",
+    "Camaron cocido", "Pulpo", "Calamar", "Jaiba", "Surimi",
+    "Pescado empanizado"
+  ],
+
+  "Lácteos":[
+    "Leche de cabra", "Leche de oveja", "Leche fortificada con calcio",
+    "Leche sabor chocolate", "Leche sabor fresa", "Leche sabor vainilla",
+    "Bebida lactea fermentada", "Bebida lactea saborizada", "Queso panela",
+    "Queso oaxaca", "Queso asadero", "Queso chihuahua", "Queso provolone",
+    "Queso emmental", "Queso brie", "Queso camembert", "Queso feta",
+    "Queso cottage", "Queso mascarpone", "Queso bufala mozzarella",
+    "Queso idiazabal", "Queso edam", "Queso colby", "Queso monterrey jack",
+    "Queso romano", "Queso pecorino", "Queso gruyere", "Queso suizo",
+    "Queso port salut", "Queso panela light", "Queso crema light",
+    "Crema para batir", "Crema para cafe liquida", "Yogur sabor fresa",
+    "Yogur sabor durazno", "Yogur con frutas", "Yogur deslactosado",
+    "Yogur sin azucar", "Postre lacteo sabor chocolate",
+    "Postre lacteo sabor vainilla", "Gelatina con leche", "Pudin de chocolate",
+    "Pudun de vainilla", "Helado de yogur", "Mantequilla sin sal",
+    "Mantequilla clarificada ghee", "Queso para untar", "Nieve de leche",
+    "Malteada lactea", "Leche entera", "Leche semidescremada",
+    "Leche descremada", "Leche deslactosada", "Leche evaporada",
+    "Leche condensada", "Leche en polvo", "Huevo", "Yogur natural",
+    "Yogur griego", "Yogur bebible", "Queso fresco", "Queso crema",
+    "Queso mozzarella", "Queso cheddar", "Queso manchego", "Queso parmesano",
+    "Queso gouda", "Queso azul", "Requeson", "Ricotta", "Mantequilla",
+    "Margarina lactea", "Crema de leche", "Crema agria", "Suero de leche",
+    "Helado", "Paletas de crema", "Flan de leche", "Natilla", "Kefir"
+  ],
+
+  "Bebidas":[
+    "Agua embotellada", "Refrescos", "Jugos", "Cervezas y vinos"
+  ],
+
+  "Snacks y Dulces":[
+    "Papas fritas", "Galletas", "Chocolates", "Mantecaditos", "Chicles"
+  ],
+
+  "Cereales":[
+    "Almendra", "Anacardo", "Avellana", "Cacahuate", "Castana de caju",
+    "Castana de Brasil", "Chia", "Coco rallado", "Datil seco", "Higo seco",
+    "Lino", "Nuez", "Nuez de macadamia", "Nuez pecana", "Pasas", "Pistache",
+    "Semilla de calabaza", "Semilla de girasol", "Semilla de sesamo",
+    "Semilla de amapola"
+  ],
+
+  "Productos de Higiene Personal":[
+    "Jabon de baño", "Champu", "Pasta de dientes", "Desodorante", "Bicarbonato"
+  ],
+
+  "Frutas y Verduras":[
+    "Guinear", "Yaca", "Carambolillo", "Pepino ingles", "Col rizada",
+    "Col china", "Nabo japones", "Jengibre fresco", "Taro", "Ñame", "Yuca",
+    "Malanga", "Brotes de soya", "Rabano sandia", "Berza", "Berros",
+    "Mostaza verde", "Pak choi", "Kai lan", "Chayote", "Chayote espinoso",
+    "Tomatillo", "Flor de calabaza", "Verdolaga", "Quelites", "Tamarindo",
+    "Tangelo", "Pomelo", "Mandarino verde", "Uchuva", "Tamarillo",
+    "Pepino persa", "Pepino limon", "Ciruelo rojo", "Mango petacon",
+    "Mango ataulfo", "Mango manila", "Peron", "Peron golden", "Pera asiatica",
+    "Manzana gala", "Manzana pink lady", "Manzana honeycrisp", "Melocoton",
+    "Durazno criollo", "Fruta del dragon amarilla", "Naranja sanguina",
+    "Moras azules", "Banana dominico-harton", "Zapallo", "Pepino armenio",
+    "Acelga", "Aguacate", "Ajo", "Mora", "Alcachofa", "Apio", "Arandano",
+    "Berenjena", "Betabel", "Jitomate", "Brocoli", "Calabacita", "Calabaza",
+    "Camote", "Carambola", "Cebolla", "Cebollin", "Cereza", "Champiñon",
+    "Chile", "Chicharo", "Chirimoya", "Ciruela", "Coco", "Col", "Col morada",
+    "Coliflor", "Durazno", "Elote", "Endivia", "Escarola", "Esparrago",
+    "Espinaca", "Fresa", "Frambuesa", "Garbanzo tierno", "Granada", "Grosella",
+    "Guayaba", "Haba", "Higo", "Jicama", "Kiwi", "Lechuga", "Lenteja verde",
+    "Limon", "Litchi", "Mandarina", "Mamey", "Manzana", "Manzana verde",
+    "Maracuya", "Melon", "Mango", "Nabo", "Naranja", "Nispero", "Papa",
+    "Papaya", "Pera", "Pera roja", "Pepino", "Pimiento", "Piña", "Pitahaya",
+    "Platano", "Platano macho", "Platano dominico", "Rabano", "Repollo",
+    "Rucula", "Sandia", "Seta", "Tomate", "Toronja", "Tuna", "Uva",
+    "Uva verde", "Zapote", "Zanahoria", "Zarzamora"
+  ],
+
+  "Limpieza":[
+    "Detergente en polvo", "Detergente liquido", "Suavizante de telas",
+    "Jabon en barra para lavar", "Jabon liquido para manos", "Cloro",
+    "Blanqueador", "Desinfectante liquido", "Desinfectante en aerosol",
+    "Limpiador multiusos", "Limpiador de pisos", "Limpiador de baños",
+    "Limpiador de cocina", "Limpiador de vidrios", "Limpiador de hornos",
+    "Limpiador de Lavadoras", "Limpiador de acero inoxidable", "Quitamanchas",
+    "Desengrasante", "Alcohol", "Amoniaco", "Limpiador aromatizante",
+    "Pastillas para WC", "Gel limpiador para WC", "Escoba", "Trapeador",
+    "Cubeta", "Fibra para tallar", "Esponjas", "Trapos de limpieza",
+    "Toallas desechables", "Servilletas", "Papel higienico", "Papel de cocina",
+    "Bolsas para basura", "Insecticida", "Repelente de insectos",
+    "Aromatizante ambiental", "Limpiador antibacterial", "Guantes de limpieza",
+    "Cepillo para baño"
+  ]
 };
 
-let compras = JSON.parse(localStorage.getItem("compras")) || [];
+const STORAGE_COMPRAS = "supermercado_pro_max_compras";
+const STORAGE_PRECIOS = "supermercado_pro_max_precios";
+const STORAGE_CONFIG = "supermercado_pro_max_config";
+
+let compras = cargarJSON(STORAGE_COMPRAS, []);
+let preciosGuardados = cargarJSON(STORAGE_PRECIOS, {});
+let config = cargarJSON(STORAGE_CONFIG, { dark:false });
 let sel = null;
 
 const categoria = document.getElementById("categoria");
@@ -86,187 +925,744 @@ const buscador = document.getElementById("buscador");
 const cantidad = document.getElementById("cantidad");
 const lista = document.getElementById("lista");
 const total = document.getElementById("total");
+const buscarLista = document.getElementById("buscarLista");
+const mensaje = document.getElementById("mensaje");
+const estadoSeleccion = document.getElementById("estadoSeleccion");
+
+document.addEventListener("DOMContentLoaded", iniciar);
+
+function iniciar(){
+  if(config.dark){
+    document.body.classList.add("dark");
+  }
+
+  cargarCategorias();
+  render();
+
+  categoria.onchange = function(){
+    buscador.value = "";
+    cargarProductos();
+  };
+
+  buscador.oninput = function(){
+    cargarProductos(buscador.value);
+  };
+
+  cantidad.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+      agregar();
+    }
+  });
+
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape"){
+      cerrarTodosLosModales();
+    }
+  });
+
+  registrarManifestBasico();
+}
+
+function cargarJSON(clave, fallback){
+  try{
+    const valor = localStorage.getItem(clave);
+    return valor ? JSON.parse(valor) : fallback;
+  }catch(error){
+    console.error("Error leyendo localStorage:", clave, error);
+    return fallback;
+  }
+}
+
+function guardarTodo(){
+  localStorage.setItem(STORAGE_COMPRAS, JSON.stringify(compras));
+  localStorage.setItem(STORAGE_PRECIOS, JSON.stringify(preciosGuardados));
+  localStorage.setItem(STORAGE_CONFIG, JSON.stringify(config));
+}
+
+function formatoMoneda(valor){
+  const numero = Number(valor) || 0;
+  return numero.toLocaleString("es-MX", {
+    style:"currency",
+    currency:"MXN"
+  });
+}
+
+function normalizarTexto(texto){
+  return String(texto || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .trim();
+}
+
+function escapeHTML(valor){
+  return String(valor ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function mostrarMensaje(texto, tipo = "ok"){
+  mensaje.className = "status " + tipo;
+  mensaje.textContent = texto;
+
+  setTimeout(function(){
+    mensaje.className = "status";
+    mensaje.textContent = "";
+  }, 2800);
+}
 
 function cargarCategorias(){
   categoria.innerHTML = "";
   categoria.add(new Option("Todos","Todos"));
-  Object.keys(catalogo).forEach(c => categoria.add(new Option(c,c)));
+
+  Object.keys(catalogo)
+    .sort((a,b) => a.localeCompare(b, "es", { sensitivity:"base" }))
+    .forEach(function(c){
+      categoria.add(new Option(c,c));
+    });
+
   cargarProductos();
 }
 
-function cargarProductos(f=""){
+function cargarProductos(filtro = ""){
   producto.innerHTML = "";
 
+  const filtroNormalizado = normalizarTexto(filtro);
+  let productos = [];
+
   if(categoria.value === "Todos"){
-    Object.keys(catalogo).forEach(c=>{
-      catalogo[c]
-        .filter(p=>p.toLowerCase().includes(f.toLowerCase()))
-        .forEach(p=>producto.add(new Option(`${p} (${c})`,p)));
+    Object.keys(catalogo).forEach(function(cat){
+      catalogo[cat].forEach(function(prod){
+        productos.push({
+          categoria:cat,
+          producto:prod,
+          texto:prod + " (" + cat + ")"
+        });
+      });
     });
+  }else{
+    const listaCategoria = catalogo[categoria.value] || [];
+    listaCategoria.forEach(function(prod){
+      productos.push({
+        categoria:categoria.value,
+        producto:prod,
+        texto:prod
+      });
+    });
+  }
+
+  productos = productos
+    .filter(function(item){
+      return normalizarTexto(item.producto).includes(filtroNormalizado) ||
+             normalizarTexto(item.categoria).includes(filtroNormalizado);
+    })
+    .sort(function(a,b){
+      return a.producto.localeCompare(b.producto, "es", { sensitivity:"base" });
+    });
+
+  if(productos.length === 0){
+    producto.add(new Option("Sin resultados", ""));
     return;
   }
 
-  catalogo[categoria.value]
-    .filter(p=>p.toLowerCase().includes(f.toLowerCase()))
-    .forEach(p=>producto.add(new Option(p,p)));
+  productos.forEach(function(item){
+    const option = new Option(item.texto, item.producto);
+    option.dataset.categoria = item.categoria;
+    producto.add(option);
+  });
 }
 
-categoria.onchange = ()=>{
-  buscador.value="";
-  cargarProductos();
-};
+function obtenerCategoriaReal(){
+  const option = producto.options[producto.selectedIndex];
 
-buscador.oninput = ()=>cargarProductos(buscador.value);
+  if(option && option.dataset.categoria){
+    return option.dataset.categoria;
+  }
+
+  if(categoria.value !== "Todos"){
+    return categoria.value;
+  }
+
+  return Object.keys(catalogo).find(function(k){
+    return catalogo[k].includes(producto.value);
+  }) || "Sin categoría";
+}
 
 function agregar(){
   if(!producto.value){
-    alert("Selecciona un producto");
+    mostrarMensaje("Selecciona un producto válido.", "error");
     return;
   }
 
-  if(!cantidad.value || +cantidad.value <= 0){
-    alert("Captura una cantidad válida");
+  const cantidadNum = parseInt(cantidad.value, 10);
+
+  if(isNaN(cantidadNum) || cantidadNum <= 0){
+    mostrarMensaje("Captura una cantidad válida.", "error");
     return;
   }
 
-  let catReal = categoria.value;
-  if(catReal === "Todos"){
-    catReal = Object.keys(catalogo).find(k => catalogo[k].includes(producto.value));
-  }
+  const catReal = obtenerCategoriaReal();
+  const nombreProducto = producto.value;
+  const precioHistorico = Number(preciosGuardados[nombreProducto] || 0);
 
   compras.push({
+    id: Date.now() + "_" + Math.random().toString(16).slice(2),
     c: catReal,
-    p: producto.value,
-    ca: +cantidad.value,
-    pr: 0, // ✅ Se agrega sin precio
-    s: false
+    p: nombreProducto,
+    ca: cantidadNum,
+    pr: precioHistorico > 0 ? precioHistorico : 0,
+    s: false,
+    fecha: new Date().toISOString()
   });
 
   cantidad.value = 1;
+  sel = compras.length - 1;
   render();
-}
 
-/* ✅ FUNCIÓN CORREGIDA */
-function eliminar(){
-  if(sel !== null && sel >= 0 && sel < compras.length){
-    compras.splice(sel,1);
-    sel = null;
-    render();
+  if(precioHistorico > 0){
+    mostrarMensaje("Producto agregado con precio histórico: " + formatoMoneda(precioHistorico));
+  }else{
+    mostrarMensaje("Producto agregado. Precio pendiente.");
   }
 }
 
-function capturarPrecio(){
-  if(sel === null || sel < 0 || sel >= compras.length){
-    alert("Selecciona un producto de la lista");
+function eliminar(){
+  if(!haySeleccion()){
+    mostrarMensaje("Selecciona un producto de la lista para eliminar.", "error");
     return;
   }
 
   const item = compras[sel];
-  const precioCapturado = prompt(`Ingresa el precio de "${item.p}":`, item.pr > 0 ? item.pr : "0");
 
-  if(precioCapturado === null) return; // canceló
+  if(confirm('¿Eliminar "' + item.p + '" de la lista?')){
+    compras.splice(sel,1);
+    sel = null;
+    render();
+    mostrarMensaje("Producto eliminado.");
+  }
+}
 
-  const precioNum = parseFloat(precioCapturado);
+function limpiar(){
+  if(compras.length === 0){
+    mostrarMensaje("La lista ya está vacía.", "error");
+    return;
+  }
+
+  if(confirm("¿Limpiar toda la lista de compras?")){
+    compras = [];
+    sel = null;
+    render();
+    mostrarMensaje("Lista limpiada.");
+  }
+}
+
+function haySeleccion(){
+  return sel !== null && sel >= 0 && sel < compras.length;
+}
+
+function toggle(i){
+  if(i < 0 || i >= compras.length) return;
+
+  compras[i].s = !compras[i].s;
+  sel = i;
+  render();
+}
+
+function seleccionar(i){
+  if(i < 0 || i >= compras.length) return;
+
+  sel = i;
+  render();
+}
+
+function duplicarSeleccionado(){
+  if(!haySeleccion()){
+    mostrarMensaje("Selecciona un producto para duplicarlo.", "error");
+    return;
+  }
+
+  const original = compras[sel];
+
+  compras.push({
+    ...original,
+    id: Date.now() + "_" + Math.random().toString(16).slice(2),
+    s:false,
+    fecha:new Date().toISOString()
+  });
+
+  sel = compras.length - 1;
+  render();
+  mostrarMensaje("Producto duplicado.");
+}
+
+function abrirModalPrecio(){
+  if(!haySeleccion()){
+    mostrarMensaje("Selecciona un producto de la lista para capturar precio.", "error");
+    return;
+  }
+
+  const item = compras[sel];
+  document.getElementById("modalPrecioTexto").textContent = 'Precio para "' + item.p + '".';
+  document.getElementById("inputPrecio").value = item.pr > 0 ? item.pr : "";
+  abrirModal("modalPrecio");
+
+  setTimeout(function(){
+    document.getElementById("inputPrecio").focus();
+  }, 100);
+}
+
+function guardarPrecio(){
+  if(!haySeleccion()){
+    cerrarModal("modalPrecio");
+    return;
+  }
+
+  const input = document.getElementById("inputPrecio");
+  const precioNum = parseFloat(input.value);
 
   if(isNaN(precioNum) || precioNum < 0){
-    alert("Ingresa un precio válido");
+    mostrarMensaje("Ingresa un precio válido.", "error");
+    input.focus();
     return;
   }
 
   compras[sel].pr = precioNum;
+  preciosGuardados[compras[sel].p] = precioNum;
+
+  cerrarModal("modalPrecio");
   render();
+  mostrarMensaje("Precio guardado y recordado para próximas compras.");
 }
 
-function editarCantidad(){
-  if(sel === null || sel < 0 || sel >= compras.length){
-    alert("Selecciona un producto de la lista");
+function abrirModalCantidad(){
+  if(!haySeleccion()){
+    mostrarMensaje("Selecciona un producto de la lista para editar cantidad.", "error");
     return;
   }
 
   const item = compras[sel];
-  const nuevaCantidad = prompt(`Ingresa la nueva cantidad de "${item.p}":`, item.ca);
+  document.getElementById("modalCantidadTexto").textContent = 'Cantidad para "' + item.p + '".';
+  document.getElementById("inputCantidadEditar").value = item.ca;
+  abrirModal("modalCantidad");
 
-  if(nuevaCantidad === null) return; // canceló
+  setTimeout(function(){
+    document.getElementById("inputCantidadEditar").focus();
+  }, 100);
+}
 
-  const cantidadNum = parseInt(nuevaCantidad, 10);
+function guardarCantidad(){
+  if(!haySeleccion()){
+    cerrarModal("modalCantidad");
+    return;
+  }
+
+  const input = document.getElementById("inputCantidadEditar");
+  const cantidadNum = parseInt(input.value, 10);
 
   if(isNaN(cantidadNum) || cantidadNum <= 0){
-    alert("Ingresa una cantidad válida");
+    mostrarMensaje("Ingresa una cantidad válida.", "error");
+    input.focus();
     return;
   }
 
   compras[sel].ca = cantidadNum;
+  cerrarModal("modalCantidad");
   render();
-  alert("Cantidad actualizada");
+  mostrarMensaje("Cantidad actualizada.");
 }
 
+function abrirModalProductoManual(){
+  document.getElementById("manualCategoria").value = "";
+  document.getElementById("manualProducto").value = "";
+  document.getElementById("manualCantidad").value = "1";
+  document.getElementById("manualPrecio").value = "";
+  abrirModal("modalProductoManual");
 
+  setTimeout(function(){
+    document.getElementById("manualProducto").focus();
+  }, 100);
+}
 
-function limpiar(){
-  if(confirm("¿Limpiar lista?")){
-    compras=[];
-    sel=null;
-    render();
+function agregarProductoManual(){
+  const cat = document.getElementById("manualCategoria").value.trim() || "Manual";
+  const prod = document.getElementById("manualProducto").value.trim();
+  const cant = parseInt(document.getElementById("manualCantidad").value, 10);
+  const precio = parseFloat(document.getElementById("manualPrecio").value || "0");
+
+  if(!prod){
+    mostrarMensaje("Captura el nombre del producto.", "error");
+    return;
   }
+
+  if(isNaN(cant) || cant <= 0){
+    mostrarMensaje("Captura una cantidad válida.", "error");
+    return;
+  }
+
+  if(isNaN(precio) || precio < 0){
+    mostrarMensaje("Captura un precio válido o déjalo vacío.", "error");
+    return;
+  }
+
+  compras.push({
+    id: Date.now() + "_" + Math.random().toString(16).slice(2),
+    c: cat,
+    p: prod,
+    ca: cant,
+    pr: precio,
+    s: false,
+    fecha: new Date().toISOString()
+  });
+
+  if(precio > 0){
+    preciosGuardados[prod] = precio;
+  }
+
+  sel = compras.length - 1;
+  cerrarModal("modalProductoManual");
+  render();
+  mostrarMensaje("Producto manual agregado.");
 }
 
-function toggle(i){
-  compras[i].s = !compras[i].s;
-  render();
+function abrirModal(id){
+  document.getElementById(id).classList.add("show");
+}
+
+function cerrarModal(id){
+  document.getElementById(id).classList.remove("show");
+}
+
+function cerrarTodosLosModales(){
+  document.querySelectorAll(".modal-backdrop").forEach(function(modal){
+    modal.classList.remove("show");
+  });
+}
+
+document.querySelectorAll(".modal-backdrop").forEach(function(backdrop){
+  backdrop.addEventListener("click", function(e){
+    if(e.target === backdrop){
+      backdrop.classList.remove("show");
+    }
+  });
+});
+
+function toggleDarkMode(){
+  document.body.classList.toggle("dark");
+  config.dark = document.body.classList.contains("dark");
+  guardarTodo();
+}
+
+function obtenerComprasOrdenadas(){
+  const filtroLista = normalizarTexto(buscarLista.value);
+
+  return compras
+    .map(function(item, indexOriginal){
+      return { ...item, indexOriginal };
+    })
+    .filter(function(item){
+      if(!filtroLista) return true;
+
+      return normalizarTexto(item.p).includes(filtroLista) ||
+             normalizarTexto(item.c).includes(filtroLista);
+    })
+    .sort(function(a,b){
+      if(a.s !== b.s){
+        return a.s ? 1 : -1;
+      }
+
+      const cat = a.c.localeCompare(b.c, "es", { sensitivity:"base" });
+      if(cat !== 0) return cat;
+
+      return a.p.localeCompare(b.p, "es", { sensitivity:"base" });
+    });
 }
 
 function render(){
   lista.innerHTML = "";
+
   let totalCompra = 0;
+  let totalArticulos = 0;
+  let pendientes = 0;
+  let surtidos = 0;
+  let sinPrecio = 0;
 
-  // ✅ Crear copia con índice original
-  const comprasOrdenadas = compras
-    .map((item, indexOriginal) => ({ ...item, indexOriginal }))
-    .sort((a, b) => {
-      // Primero por categoría
-      const cat = a.c.localeCompare(b.c, 'es', { sensitivity: 'base' });
-      if(cat !== 0) return cat;
+  compras.forEach(function(x){
+    const ca = Number(x.ca) || 0;
+    const pr = Number(x.pr) || 0;
 
-      // Si la categoría es igual, ordenar por producto
-      return a.p.localeCompare(b.p, 'es', { sensitivity: 'base' });
-    });
+    totalCompra += ca * pr;
+    totalArticulos += ca;
 
-  comprasOrdenadas.forEach((x) => {
-    const i = x.indexOriginal; // ✅ índice real dentro de compras
+    if(x.s){
+      surtidos++;
+    }else{
+      pendientes++;
+    }
+
+    if(pr <= 0){
+      sinPrecio++;
+    }
+  });
+
+  const comprasOrdenadas = obtenerComprasOrdenadas();
+
+  if(comprasOrdenadas.length === 0){
+    const tr = document.createElement("tr");
+    tr.innerHTML = '<td colspan="7" class="empty">No hay productos para mostrar.</td>';
+    lista.appendChild(tr);
+  }
+
+  comprasOrdenadas.forEach(function(x){
+    const i = x.indexOriginal;
+    const subtotal = (Number(x.ca) || 0) * (Number(x.pr) || 0);
 
     const tr = document.createElement("tr");
     tr.dataset.index = i;
 
     if(x.s) tr.classList.add("surtido");
     if(i === sel) tr.classList.add("selected");
+    if(Number(x.pr) >= 500) tr.classList.add("expensive");
 
-    tr.onclick = () => {
-      sel = i;
-      render();
+    tr.onclick = function(){
+      seleccionar(i);
     };
 
     tr.innerHTML = `
-      <td>${x.c}</td>
-      <td>${x.p}</td>
-      <td>${x.ca}</td>
-      <td>${x.pr > 0 ? '$' + x.pr.toFixed(2) : 'Pendiente'}</td>
-      <td>$${(x.ca * x.pr).toFixed(2)}</td>
+      <td><span class="cat-badge">${escapeHTML(x.c)}</span></td>
+      <td class="producto-cell">${escapeHTML(x.p)}</td>
+      <td>${escapeHTML(x.ca)}</td>
+      <td>${x.pr > 0 ? formatoMoneda(x.pr) : '<span class="price-pending">Pendiente</span>'}</td>
+      <td><strong>${formatoMoneda(subtotal)}</strong></td>
       <td>
-        <input type="checkbox" ${x.s ? "checked" : ""}
-        onclick="event.stopPropagation();toggle(${i})">
+        <input type="checkbox" ${x.s ? "checked" : ""} onclick="event.stopPropagation();toggle(${i})">
+      </td>
+      <td class="no-print">
+        <div class="actions-mini">
+          <button class="mini-btn blue" onclick="event.stopPropagation();seleccionar(${i});abrirModalPrecio()">Precio</button>
+          <button class="mini-btn orange" onclick="event.stopPropagation();seleccionar(${i});abrirModalCantidad()">Cant.</button>
+        </div>
       </td>
     `;
 
     lista.appendChild(tr);
-    totalCompra += x.ca * x.pr;
   });
 
-  total.innerText = "Total: $" + totalCompra.toFixed(2);
-  localStorage.setItem("compras", JSON.stringify(compras));
+  document.getElementById("statArticulos").textContent = totalArticulos;
+  document.getElementById("statPendientes").textContent = pendientes;
+  document.getElementById("statSurtidos").textContent = surtidos;
+  document.getElementById("statSinPrecio").textContent = sinPrecio;
+  total.textContent = formatoMoneda(totalCompra);
+
+  if(haySeleccion()){
+    estadoSeleccion.textContent = "Seleccionado: " + compras[sel].p;
+  }else{
+    estadoSeleccion.textContent = "Sin producto seleccionado";
+  }
+
+  guardarTodo();
 }
 
-cargarCategorias();
-render();
+function crearTextoLista(){
+  const fecha = new Date().toLocaleString("es-MX");
+  let texto = "🛒 Supermercado PRO MAX\n";
+  texto += "Fecha: " + fecha + "\n\n";
+
+  const ordenadas = compras
+    .map(function(item){
+      return { ...item };
+    })
+    .sort(function(a,b){
+      if(a.s !== b.s){
+        return a.s ? 1 : -1;
+      }
+
+      const cat = a.c.localeCompare(b.c, "es", { sensitivity:"base" });
+      if(cat !== 0) return cat;
+
+      return a.p.localeCompare(b.p, "es", { sensitivity:"base" });
+    });
+
+  let totalCompra = 0;
+
+  ordenadas.forEach(function(x){
+    const subtotal = (Number(x.ca) || 0) * (Number(x.pr) || 0);
+    totalCompra += subtotal;
+
+    texto += (x.s ? "✅ " : "⬜ ");
+    texto += x.ca + " x " + x.p;
+    texto += " | " + x.c;
+
+    if(x.pr > 0){
+      texto += " | " + formatoMoneda(x.pr);
+      texto += " | Subtotal: " + formatoMoneda(subtotal);
+    }else{
+      texto += " | Precio pendiente";
+    }
+
+    texto += "\n";
+  });
+
+  texto += "\nTotal estimado: " + formatoMoneda(totalCompra);
+  return texto;
+}
+
+async function copiarLista(){
+  if(compras.length === 0){
+    mostrarMensaje("No hay productos para copiar.", "error");
+    return;
+  }
+
+  const texto = crearTextoLista();
+
+  try{
+    if(navigator.clipboard && window.isSecureContext){
+      await navigator.clipboard.writeText(texto);
+    }else{
+      const area = document.createElement("textarea");
+      area.value = texto;
+      document.body.appendChild(area);
+      area.select();
+      document.execCommand("copy");
+      document.body.removeChild(area);
+    }
+
+    mostrarMensaje("Lista copiada al portapapeles.");
+  }catch(error){
+    console.error(error);
+    mostrarMensaje("No se pudo copiar automáticamente. Usa imprimir o exportar.", "error");
+  }
+}
+
+function imprimirLista(){
+  document.getElementById("fechaImpresion").textContent = new Date().toLocaleString("es-MX");
+  window.print();
+}
+
+function exportarBackup(){
+  const respaldo = {
+    app:"Supermercado PRO MAX",
+    version:"2.0",
+    fecha:new Date().toISOString(),
+    compras:compras,
+    preciosGuardados:preciosGuardados,
+    config:config
+  };
+
+  const blob = new Blob(
+    [JSON.stringify(respaldo, null, 2)],
+    { type:"application/json" }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  const fecha = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = "supermercado_backup_" + fecha + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  URL.revokeObjectURL(url);
+  mostrarMensaje("Respaldo exportado.");
+}
+
+function importarBackup(event){
+  const archivo = event.target.files[0];
+
+  if(!archivo){
+    return;
+  }
+
+  const lector = new FileReader();
+
+  lector.onload = function(e){
+    try{
+      const data = JSON.parse(e.target.result);
+
+      let nuevasCompras = [];
+      let nuevosPrecios = {};
+
+      if(Array.isArray(data)){
+        nuevasCompras = data;
+      }else{
+        nuevasCompras = Array.isArray(data.compras) ? data.compras : [];
+        nuevosPrecios = data.preciosGuardados || {};
+      }
+
+      if(!Array.isArray(nuevasCompras)){
+        throw new Error("Formato inválido");
+      }
+
+      if(!confirm("¿Importar respaldo? Esto reemplazará la lista actual.")){
+        event.target.value = "";
+        return;
+      }
+
+      compras = nuevasCompras.map(function(x){
+        return {
+          id: x.id || Date.now() + "_" + Math.random().toString(16).slice(2),
+          c: x.c || "Sin categoría",
+          p: x.p || "Producto",
+          ca: Number(x.ca) > 0 ? Number(x.ca) : 1,
+          pr: Number(x.pr) >= 0 ? Number(x.pr) : 0,
+          s: Boolean(x.s),
+          fecha: x.fecha || new Date().toISOString()
+        };
+      });
+
+      preciosGuardados = {
+        ...preciosGuardados,
+        ...nuevosPrecios
+      };
+
+      sel = null;
+      render();
+      mostrarMensaje("Respaldo importado correctamente.");
+    }catch(error){
+      console.error(error);
+      mostrarMensaje("El archivo no tiene un formato válido.", "error");
+    }finally{
+      event.target.value = "";
+    }
+  };
+
+  lector.readAsText(archivo);
+}
+
+function registrarManifestBasico(){
+  try{
+    const manifest = {
+      name:"Supermercado PRO MAX",
+      short_name:"Supermercado",
+      start_url:".",
+      display:"standalone",
+      background_color:"#f4f6f8",
+      theme_color:"#2e7d32",
+      icons:[
+        {
+          src:"icon-1024.png",
+          sizes:"1024x1024",
+          type:"image/png",
+          purpose:"any maskable"
+        }
+      ]
+    };
+
+    const blob = new Blob([JSON.stringify(manifest)], { type:"application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("link");
+    link.rel = "manifest";
+    link.href = url;
+    document.head.appendChild(link);
+  }catch(error){
+    console.warn("No se pudo crear manifest local.", error);
+  }
+}
 </script>
 
 </body>
