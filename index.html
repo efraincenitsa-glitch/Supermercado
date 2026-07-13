@@ -1372,10 +1372,23 @@ function seleccionar(i){
 }
 
 function toggle(i){
-  if(i < 0 || i >= compras.length) return;
-  compras[i].s = !compras[i].s;
-  sel = i;
+
+  if(i < 0 || i >= compras.length){
+    return;
+  }
+
+  const scrollActual =
+    window.scrollY;
+
+  compras[i].s =
+    !compras[i].s;
+
   render();
+
+  window.scrollTo({
+    top: scrollActual
+  });
+
 }
 
 function eliminar(){
@@ -1683,27 +1696,11 @@ function obtenerComprasOrdenadas() {
       );
 
     })
-    .sort(function(a, b) {
+.sort(function(a, b) {
 
-      if (a.s !== b.s) {
-        return a.s ? 1 : -1;
-      }
+  return a.indexOriginal - b.indexOriginal;
 
-      const cat = a.c.localeCompare(
-        b.c,
-        "es",
-        { sensitivity: "base" }
-      );
-
-      if (cat !== 0) return cat;
-
-      return a.p.localeCompare(
-        b.p,
-        "es",
-        { sensitivity: "base" }
-      );
-
-    });
+});
 
 }
 
