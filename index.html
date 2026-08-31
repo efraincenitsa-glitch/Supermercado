@@ -874,10 +874,12 @@ body.dark .bottom-bar{
     <p>Agrega un producto que no esté en el catálogo.</p>
 
     <label for="manualCategoria">Categoría</label>
-    <input type="text" id="manualCategoria" placeholder="Ejemplo: Farmacia">
+    <input type="text" id="manualCategoria" list="manualCategoriaList" placeholder="Ejemplo: Farmacia" oninput="actualizarProductosManualPorCategoria()" autocomplete="off">
+    <datalist id="manualCategoriaList"></datalist>
 
     <label for="manualProducto">Producto</label>
-    <input type="text" id="manualProducto" placeholder="Ejemplo: Curitas">
+    <input type="text" id="manualProducto" list="manualProductoList" placeholder="Ejemplo: Curitas" autocomplete="off">
+    <datalist id="manualProductoList"></datalist>
 
     <label for="manualCantidad">Cantidad</label>
     <input type="number" id="manualCantidad" min="1" step="1" value="1">
@@ -1544,11 +1546,60 @@ function abrirModalProductoManual(){
   document.getElementById("manualProducto").value = "";
   document.getElementById("manualCantidad").value = "1";
   document.getElementById("manualPrecio").value = "";
+
+  poblarDatalistsProductoManual();
+
   abrirModal("modalProductoManual");
 
   setTimeout(function(){
     document.getElementById("manualProducto").focus();
   }, 100);
+}
+
+function poblarDatalistsProductoManual(){
+  const catalogoCompleto = obtenerCatalogoCompleto();
+  const categoriaList = document.getElementById("manualCategoriaList");
+
+  categoriaList.innerHTML = "";
+
+  Object.keys(catalogoCompleto)
+    .sort(function(a, b){ return a.localeCompare(b, "es"); })
+    .forEach(function(cat){
+      const option = document.createElement("option");
+      option.value = cat;
+      categoriaList.appendChild(option);
+    });
+
+  actualizarProductosManualPorCategoria();
+}
+
+function actualizarProductosManualPorCategoria(){
+  const catalogoCompleto = obtenerCatalogoCompleto();
+  const catActual = document.getElementById("manualCategoria").value.trim();
+  const productoList = document.getElementById("manualProductoList");
+
+  productoList.innerHTML = "";
+
+  let productos;
+  if(catActual && catalogoCompleto[catActual]){
+    productos = catalogoCompleto[catActual];
+  } else {
+    productos = Object.keys(catalogoCompleto).reduce(function(acc, cat){
+      return acc.concat(catalogoCompleto[cat]);
+    }, []);
+  }
+
+  const vistos = {};
+  productos
+    .slice()
+    .sort(function(a, b){ return a.localeCompare(b, "es"); })
+    .forEach(function(prod){
+      if(vistos[prod]) return;
+      vistos[prod] = true;
+      const option = document.createElement("option");
+      option.value = prod;
+      productoList.appendChild(option);
+    });
 }
 
 function agregarProductoManual(){
