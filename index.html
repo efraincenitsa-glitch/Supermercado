@@ -573,6 +573,51 @@ body.dark .bottom-bar{
   margin-top:10px;
 }
 
+.autocomplete-wrap{
+  position:relative;
+}
+
+.autocomplete-list{
+  position:absolute;
+  left:0;
+  right:0;
+  top:calc(100% - 3px);
+  z-index:200;
+  max-height:190px;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  margin:0;
+  padding:4px;
+  list-style:none;
+  box-shadow:0 16px 36px rgba(0,0,0,.22);
+  display:none;
+}
+
+.autocomplete-list.show{
+  display:block;
+}
+
+.autocomplete-item{
+  padding:10px 10px;
+  border-radius:10px;
+  font-size:15px;
+  cursor:pointer;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.active{
+  background:var(--soft);
+}
+
+.autocomplete-empty{
+  padding:10px 10px;
+  color:var(--muted);
+  font-size:13px;
+}
+
 .print-header{
   display:none;
 }
@@ -874,12 +919,16 @@ body.dark .bottom-bar{
     <p>Agrega un producto que no esté en el catálogo.</p>
 
     <label for="manualCategoria">Categoría</label>
-    <input type="text" id="manualCategoria" list="manualCategoriaList" placeholder="Ejemplo: Farmacia" oninput="actualizarProductosManualPorCategoria()" autocomplete="off">
-    <datalist id="manualCategoriaList"></datalist>
+    <div class="autocomplete-wrap">
+      <input type="text" id="manualCategoria" placeholder="Ejemplo: Farmacia" autocomplete="off">
+      <ul class="autocomplete-list" id="manualCategoriaList"></ul>
+    </div>
 
     <label for="manualProducto">Producto</label>
-    <input type="text" id="manualProducto" list="manualProductoList" placeholder="Ejemplo: Curitas" autocomplete="off">
-    <datalist id="manualProductoList"></datalist>
+    <div class="autocomplete-wrap">
+      <input type="text" id="manualProducto" placeholder="Ejemplo: Curitas" autocomplete="off">
+      <ul class="autocomplete-list" id="manualProductoList"></ul>
+    </div>
 
     <label for="manualCantidad">Cantidad</label>
     <input type="number" id="manualCantidad" min="1" step="1" value="1">
@@ -1556,29 +1605,139 @@ function abrirModalProductoManual(){
   }, 100);
 }
 
-function poblarDatalistsProductoManual(){
-  const catalogoCompleto = obtenerCatalogoCompleto();
-  const categoriaList = document.getElementById("manualCategoriaList");
+/*
+  Autocompletado propio (reemplaza <datalist>).
+  <datalist> no muestra su menú de forma confiable en Safari de iOS cuando
+  el input está dentro de un contenedor position:fixed (como estos modales),
+  así que aquí se dibuja el menú de sugerencias a mano con un <ul>,
+  funcionando igual en iPhone, Android y escritorio.
+*/
+function crearAutocomplete(inputEl, listaEl, obtenerOpciones, alSeleccionar){
+  let opcionesActuales = [];
+  let indiceActivo = -1;
 
-  categoriaList.innerHTML = "";
+  function normalizar(texto){
+    return normalizarTexto(texto);
+  }
 
-  Object.keys(catalogoCompleto)
-    .sort(function(a, b){ return a.localeCompare(b, "es"); })
-    .forEach(function(cat){
-      const option = document.createElement("option");
-      option.value = cat;
-      categoriaList.appendChild(option);
+  function cerrar(){
+    listaEl.classList.remove("show");
+    listaEl.innerHTML = "";
+    opcionesActuales = [];
+    indiceActivo = -1;
+  }
+
+  function pintar(){
+    const filtro = normalizar(inputEl.value);
+    const todas = obtenerOpciones();
+
+    opcionesActuales = filtro
+      ? todas.filter(function(op){ return normalizar(op).includes(filtro); })
+      : todas;
+
+    listaEl.innerHTML = "";
+    indiceActivo = -1;
+
+    if(opcionesActuales.length === 0){
+      listaEl.classList.remove("show");
+      return;
+    }
+
+    opcionesActuales.slice(0, 40).forEach(function(op){
+      const li = document.createElement("li");
+      li.className = "autocomplete-item";
+      li.textContent = op;
+      li.addEventListener("mousedown", function(e){
+        e.preventDefault();
+        inputEl.value = op;
+        cerrar();
+        if(alSeleccionar) alSeleccionar(op);
+      });
+      listaEl.appendChild(li);
     });
 
-  actualizarProductosManualPorCategoria();
+    listaEl.classList.add("show");
+  }
+
+  inputEl.addEventListener("input", function(){
+    pintar();
+    if(alSeleccionar) alSeleccionar(null);
+  });
+
+  inputEl.addEventListener("focus", pintar);
+
+  inputEl.addEventListener("keydown", function(e){
+    const items = listaEl.querySelectorAll(".autocomplete-item");
+    if(!items.length) return;
+
+    if(e.key === "ArrowDown"){
+      e.preventDefault();
+      indiceActivo = (indiceActivo + 1) % items.length;
+    } else if(e.key === "ArrowUp"){
+      e.preventDefault();
+      indiceActivo = (indiceActivo - 1 + items.length) % items.length;
+    } else if(e.key === "Enter"){
+      if(indiceActivo >= 0){
+        e.preventDefault();
+        items[indiceActivo].dispatchEvent(new Event("mousedown"));
+      }
+      return;
+    } else if(e.key === "Escape"){
+      cerrar();
+      return;
+    } else {
+      return;
+    }
+
+    items.forEach(function(it, i){
+      it.classList.toggle("active", i === indiceActivo);
+    });
+  });
+
+  inputEl.addEventListener("blur", function(){
+    setTimeout(cerrar, 120);
+  });
+
+  return { cerrar: cerrar };
 }
 
-function actualizarProductosManualPorCategoria(){
+let autocompleteCategoriaManual = null;
+let autocompleteProductoManual = null;
+
+function configurarAutocompleteProductoManual(){
+  const inputCategoria = document.getElementById("manualCategoria");
+  const listaCategoria = document.getElementById("manualCategoriaList");
+  const inputProducto = document.getElementById("manualProducto");
+  const listaProducto = document.getElementById("manualProductoList");
+
+  if(!autocompleteCategoriaManual){
+    autocompleteCategoriaManual = crearAutocomplete(
+      inputCategoria,
+      listaCategoria,
+      function(){
+        return Object.keys(obtenerCatalogoCompleto())
+          .sort(function(a, b){ return a.localeCompare(b, "es"); });
+      },
+      function(){
+        actualizarProductosManualPorCategoria();
+      }
+    );
+  }
+
+  if(!autocompleteProductoManual){
+    autocompleteProductoManual = crearAutocomplete(
+      inputProducto,
+      listaProducto,
+      function(){
+        return obtenerProductosManualDisponibles();
+      }
+    );
+  }
+}
+
+function obtenerProductosManualDisponibles(){
   const catalogoCompleto = obtenerCatalogoCompleto();
   const catActual = document.getElementById("manualCategoria").value.trim();
-  const productoList = document.getElementById("manualProductoList");
-
-  productoList.innerHTML = "";
 
   let productos;
   if(catActual && catalogoCompleto[catActual]){
@@ -1590,16 +1749,23 @@ function actualizarProductosManualPorCategoria(){
   }
 
   const vistos = {};
-  productos
+  return productos
     .slice()
     .sort(function(a, b){ return a.localeCompare(b, "es"); })
-    .forEach(function(prod){
-      if(vistos[prod]) return;
+    .filter(function(prod){
+      if(vistos[prod]) return false;
       vistos[prod] = true;
-      const option = document.createElement("option");
-      option.value = prod;
-      productoList.appendChild(option);
+      return true;
     });
+}
+
+function poblarDatalistsProductoManual(){
+  configurarAutocompleteProductoManual();
+}
+
+function actualizarProductosManualPorCategoria(){
+  // Se mantiene por compatibilidad; el filtrado real ahora ocurre
+  // dentro de crearAutocomplete al escribir en "Producto".
 }
 
 function agregarProductoManual(){
@@ -1666,12 +1832,19 @@ function abrirModal(id){
 
 function cerrarModal(id){
   document.getElementById(id).classList.remove("show");
+  cerrarAutocompletesAbiertos();
 }
 
 function cerrarTodosLosModales(){
   document.querySelectorAll(".modal-backdrop").forEach(function(modal){
     modal.classList.remove("show");
   });
+  cerrarAutocompletesAbiertos();
+}
+
+function cerrarAutocompletesAbiertos(){
+  if(autocompleteCategoriaManual) autocompleteCategoriaManual.cerrar();
+  if(autocompleteProductoManual) autocompleteProductoManual.cerrar();
 }
 
 document.querySelectorAll(".modal-backdrop").forEach(function(backdrop){
